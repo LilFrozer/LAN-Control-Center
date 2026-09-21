@@ -137,7 +137,7 @@ bool DeviceFinderScaner::pingHost( u32 addr, u32 timeout_ms )
 
 std::vector<DiscoveredDevice> DeviceFinderScaner::scanOneSubnet( LocalSubnet &subnet )
 /**
- * 
+ *
  */
 {
     std::vector<DiscoveredDevice> devices{};

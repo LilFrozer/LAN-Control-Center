@@ -14,24 +14,61 @@ using u32 = uint32_t;
 using u16 = uint16_t;
 using u8 = uint8_t;
 
-/*
-    -> Определение подсети
-*/
-struct LocalSubnet {
-    u32 addr{};
-    u32 mask{};
+//--------------------------------------
+
+// Подсеть
+struct Subnet {
+    u32 addr { 0 };
+    u32 mask { 0 };
 };
 
-enum class pingM : u32 {
-    icmp = 0,
-    tcp_80 = 1
+class IModuleSubnetWorker {
+public:
+    virtual std::vector<Subnet> getSubnetsFromDevice() = 0;
+    virtual ~IModuleSubnetWorker() = default;
 };
+
+class ModuleSubnetWorker final : public IModuleSubnetWorker, public std::enable_shared_from_this<ModuleSubnetWorker> {
+public:
+    std::vector<Subnet> getSubnetsFromDevice() override;
+    ~ModuleSubnetWorker() override = default;
+};
+
+//--------------------------------------
+
+class IModuleVendorWorker {
+public:
+    virtual std::string findVendorByMac( const std::string &mac ) = 0;
+    virtual ~IModuleVendorWorker() = default;
+};
+
+class ModuleVendorWorker : public IModuleVendorWorker, public std::enable_shared_from_this<ModuleVendorWorker> {
+protected:
+    sqlite3 *m_data_base { nullptr };
+public:
+    std::string findVendorByMac( const std::string &mac ) override;
+    ~ModuleVendorWorker() override = default;
+};
+
+//--------------------------------------
+
+class IModuleArpWorker {
+public:
+    virtual ~IModuleArpWorker() = default;
+};
+
+//--------------------------------------
 
 struct DiscoveredDevice {
-    std::string addr{};
-    std::string mac{};
-    std::string hostname{};
-    std::string vendor{};
+    std::string addr { "" };
+    std::string mac { "" };
+    std::string hostname { "" };
+    std::string vendor { "" };
+};
+
+class ServiceDeviceFinder {
+public:
+    bool ping( const u32 &addr, const u32 &timeout );
 };
 
 class IDeviceScaner {

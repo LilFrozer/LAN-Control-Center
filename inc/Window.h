@@ -21,6 +21,12 @@ private:
 /**
  * -> Сканирование всех устройств в локальной сети
  */
+enum class ModeScanningDevices : u32 {
+    Tcp = 0,
+    Arp,
+    Icmp
+};
+
 struct LocalFinderDevicesTypes : public std::enable_shared_from_this<LocalFinderDevicesTypes> {
     bool is_active = false;
     std::unique_ptr<asio::steady_timer> timer{nullptr};
@@ -51,13 +57,16 @@ struct LocalTraficMonitor : public std::enable_shared_from_this<LocalTraficMonit
     explicit LocalTraficMonitor() : trafic_monitor(std::make_shared<MacosTraficMonitor>()) {}
 };
 
+/**
+ * -> Основной класс окна
+ */
 class Window : public std::enable_shared_from_this<Window> {
 private:
     std::unique_ptr<DeviceTable> table_{nullptr};
 private:
     std::unique_ptr<LocalFinderDevicesTypes> local_scanning_service_{nullptr};
     std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};
-    std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
+    // std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
     void onClipboardSlot();
 public:
     explicit Window( asio::io_context &ctx );

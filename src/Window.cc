@@ -76,7 +76,7 @@ Window::Window( asio::io_context &ctx ) :
     local_scanning_service_(std::make_unique<LocalFinderDevicesTypes>(ctx, "/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db"))
     , table_(std::make_unique<DeviceTable>())
     , local_clipboard_service_(std::make_shared<LocalSharedClipboard>(ctx))
-    , local_trafic_service_(std::make_shared<LocalTraficMonitor>())
+    // , local_trafic_service_(std::make_shared<LocalTraficMonitor>())
 /**
  * 
  */
@@ -133,40 +133,69 @@ void Window::doTraficMonitorService()
  * 
  */
 {
-    if (local_trafic_service_->is_active) {
-        local_trafic_service_->is_active = false;
-        local_trafic_service_->trafic_monitor->stopCapture();
-        return;
-    }
-    local_trafic_service_->is_active = true;
-    local_trafic_service_->trafic_monitor->startCapture();
+    // if (local_trafic_service_->is_active) {
+    //     local_trafic_service_->is_active = false;
+    //     local_trafic_service_->trafic_monitor->stopCapture();
+    //     return;
+    // }
+    // local_trafic_service_->is_active = true;
+    // local_trafic_service_->trafic_monitor->startCapture();
 }
 
 void Window::draw()
 /**
  * 
  */
-{
-    bool flag_show = true;
-    ImGui::Begin("MyApp", &flag_show, ImGuiWindowFlags_NoResize);
-    ImGui::SetWindowSize(ImVec2(1024, 768), ImGuiCond_Once);
+{   
+    auto *size = ImGui::GetMainViewport();          // -> Получаем размеры рабочей области приложения
+    ImGui::SetNextWindowPos(size->WorkPos);         // -> Устанавливаем позицию в 0,0 относительно главного окна
+    ImGui::SetNextWindowSize(size->WorkSize);       // -> Устанавливаем размер на всю ширину и высоту
 
-    if (ImGui::Button("Scan")) {
-        doLocalScanningService();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Clipboard")) {
-        doLocalClipboardService();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("TraficMonitor")) {
-        doTraficMonitorService();
-    }
-    ImGui::Separator();
+    // -> Флаги окна
+    auto window_flags = (ImGuiWindowFlags_MenuBar |
+                        ImGuiWindowFlags_NoResize | 
+                        ImGuiWindowFlags_NoMove | 
+                        ImGuiWindowFlags_NoBringToFrontOnFocus | 
+                        ImGuiWindowFlags_NoNavFocus);
 
-    if (table_) {
-        table_->drawTable();
+    bool fl = true;
+    ImGui::Begin("LAN Control Center", &fl, window_flags);
+
+    // -> Верхнее меню
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("Device discovery method")) {
+            if (ImGui::MenuItem("TCP", "+")) {
+
+            }
+            if (ImGui::MenuItem("ARP", "-")) {
+
+            }
+            if (ImGui::MenuItem("ICMP", "-")) {
+
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
     }
+
+    // ImGui::SetWindowSize(ImVec2(1024, 768), ImGuiCond_Once);
+
+    // if (ImGui::Button("Scan")) {
+    //     doLocalScanningService();
+    // }
+    // ImGui::Separator();
+    // if (ImGui::Button("Clipboard")) {
+    //     doLocalClipboardService();
+    // }
+    // ImGui::SameLine();
+    // if (ImGui::Button("TraficMonitor")) {
+    //     doTraficMonitorService();
+    // }
+    // ImGui::Separator();
+
+    // if (table_) {
+    //     table_->drawTable();
+    // }
 
     ImGui::End();
 }
