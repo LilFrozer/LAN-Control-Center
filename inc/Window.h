@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "DeviceFinderScaner.h"
+#include "DevicesFinder/DeviceFinder.h"
 #include "KeyScaner.h"
 #include "MulticastBus.h"
 #include "TraficMonitor.h"
@@ -9,32 +9,32 @@
 
 class DeviceTable {
 public:
-    void addRow(const DiscoveredDevice& device);
+    // void addRow(const DiscoveredDevice& device);
     void clearTable();
     size_t getRowCount() const;
     void drawTable();
 private:
-    std::vector<DiscoveredDevice> data_;
+    // std::vector<DiscoveredDevice> data_;
     mutable std::mutex mutex_;
 };
 
-/**
- * -> Сканирование всех устройств в локальной сети
- */
-enum class ModeScanningDevices : u32 {
-    Tcp = 0,
-    Arp,
-    Icmp
-};
+// /**
+//  * -> Сканирование всех устройств в локальной сети
+//  */
+// enum class ModeScanningDevices : u32 {
+//     Tcp = 0,
+//     Arp,
+//     Icmp
+// };
 
-struct LocalFinderDevicesTypes : public std::enable_shared_from_this<LocalFinderDevicesTypes> {
-    bool is_active = false;
-    std::unique_ptr<asio::steady_timer> timer{nullptr};
-    std::unique_ptr<IDeviceScaner> device_scaner{nullptr};
-    explicit LocalFinderDevicesTypes( asio::io_context &ctx, const std::string &path_db ) : 
-        timer(std::make_unique<asio::steady_timer>(ctx))
-        , device_scaner(std::make_unique<DeviceFinderScaner>("/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db")) {}
-};
+// struct LocalFinderDevicesTypes : public std::enable_shared_from_this<LocalFinderDevicesTypes> {
+//     bool is_active = false;
+//     std::unique_ptr<asio::steady_timer> timer{nullptr};
+//     std::unique_ptr<IDeviceScaner> device_scaner{nullptr};
+//     explicit LocalFinderDevicesTypes( asio::io_context &ctx, const std::string &path_db ) : 
+//         timer(std::make_unique<asio::steady_timer>(ctx))
+//         , device_scaner(std::make_unique<DeviceFinderScaner>("/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db")) {}
+// };
 
 /**
  * -> Общий буфер обмена в локальной сети
@@ -64,7 +64,7 @@ class Window : public std::enable_shared_from_this<Window> {
 private:
     std::unique_ptr<DeviceTable> table_{nullptr};
 private:
-    std::unique_ptr<LocalFinderDevicesTypes> local_scanning_service_{nullptr};
+    std::shared_ptr<AbstractDeviceFinder> m_device_finder { nullptr };
     std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};
     // std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
     void onClipboardSlot();

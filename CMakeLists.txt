@@ -19,8 +19,6 @@ file(GLOB IMGUI_SOURCES
 
 add_executable(local_scaner_prj
     src/main.cc
-    inc/DeviceFinderScaner.h
-    src/DeviceFinderScaner.cc
     inc/Window.h
     src/Window.cc
     inc/asio.hpp
@@ -32,6 +30,16 @@ add_executable(local_scaner_prj
     src/KeyScaner.cc
     inc/TraficMonitor.h
     src/TraficMonitor.cc
+
+    inc/DevicesFinder/ArpWorker.h
+    inc/DevicesFinder/DeviceFinder.h
+    inc/DevicesFinder/SubnetWorker.h
+    inc/DevicesFinder/VendorWorker.h
+
+    src/ArpWorker.cc
+    src/DeviceFinder.cc
+    src/SubnetWorker.cc
+    src/VendorWorker.cc
 )
 
 target_include_directories(local_scaner_prj PRIVATE

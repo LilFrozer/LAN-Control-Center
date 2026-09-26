@@ -8,7 +8,7 @@ std::map<std::string, std::string> MacosArpWorker::doReadArp() const
 {
     switch (m_cur_mode) {
         case MacosArpMode::TerminalArpAN: {
-            std::array<char, 128> buffer;
+            std::array<char, 128> buffer = {};
 
             // * Используем uniq ptr, чтобы сразу же закрыть файл
             std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("arp -an", "r"), pclose);
@@ -25,7 +25,7 @@ std::map<std::string, std::string> MacosArpWorker::doReadArp() const
             break;
         }
         case MacosArpMode::SysctlBSD: {
-            
+
             break;
         }
     }

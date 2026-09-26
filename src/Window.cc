@@ -1,14 +1,14 @@
 #include "Window.h"
 #include "imgui.h"
 
-void DeviceTable::addRow(const DiscoveredDevice& device) 
-/**
- * 
- */
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    data_.push_back(device);
-}
+// void DeviceTable::addRow(const DiscoveredDevice& device) 
+// /**
+//  * 
+//  */
+// {
+//     std::lock_guard<std::mutex> lock(mutex_);
+//     data_.push_back(device);
+// }
 
 void DeviceTable::clearTable() 
 /**
@@ -16,7 +16,7 @@ void DeviceTable::clearTable()
  */
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    data_.clear();
+    // data_.clear();
 }
 
 size_t DeviceTable::getRowCount() const 
@@ -24,8 +24,9 @@ size_t DeviceTable::getRowCount() const
  * 
  */
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return data_.size();
+    // std::lock_guard<std::mutex> lock(mutex_);
+    // return data_.size();
+    return 0;
 }
 
 void DeviceTable::drawTable() 
@@ -45,17 +46,17 @@ void DeviceTable::drawTable()
         ImGui::TableSetupColumn("Vendor", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
 
-        for (const auto& dev : data_) {
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", dev.addr.c_str());
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", dev.hostname.c_str());
-            ImGui::TableSetColumnIndex(2);
-            ImGui::Text("%s", dev.mac.c_str());
-            ImGui::TableSetColumnIndex(3);
-            ImGui::Text("%s", dev.vendor.c_str());
-        }
+        // for (const auto& dev : data_) {
+        //     ImGui::TableNextRow();
+        //     ImGui::TableSetColumnIndex(0);
+        //     ImGui::Text("%s", dev.addr.c_str());
+        //     ImGui::TableSetColumnIndex(1);
+        //     ImGui::Text("%s", dev.hostname.c_str());
+        //     ImGui::TableSetColumnIndex(2);
+        //     ImGui::Text("%s", dev.mac.c_str());
+        //     ImGui::TableSetColumnIndex(3);
+        //     ImGui::Text("%s", dev.vendor.c_str());
+        // }
 
         ImGui::EndTable();
     }
@@ -72,18 +73,21 @@ void Window::onClipboardSlot()
     }).detach();
 }
 
-Window::Window( asio::io_context &ctx ) :
-    local_scanning_service_(std::make_unique<LocalFinderDevicesTypes>(ctx, "/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db"))
-    , table_(std::make_unique<DeviceTable>())
-    , local_clipboard_service_(std::make_shared<LocalSharedClipboard>(ctx))
+Window::Window( asio::io_context &ctx )
+    // m_device_finder(std::make_unique<LocalFinderDevicesTypes>(ctx, "/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db"))
+    // table_(std::make_unique<DeviceTable>())
+    // , local_clipboard_service_(std::make_shared<LocalSharedClipboard>(ctx))
     // , local_trafic_service_(std::make_shared<LocalTraficMonitor>())
 /**
  * 
  */
 {   
-    local_clipboard_service_->key_scaner->setCallBack([this]() {
-        onClipboardSlot();
-    });
+    m_device_finder = std::make_shared<MacosDeviceFinder>();
+    m_device_finder->doScan();
+
+    // local_clipboard_service_->key_scaner->setCallBack([this]() {
+    //     onClipboardSlot();
+    // });
 }
 
 void Window::doLocalScanningService()
@@ -91,25 +95,25 @@ void Window::doLocalScanningService()
  * 
  */
 {
-    if (local_scanning_service_->is_active) {
-        asio::error_code ec;
-        local_scanning_service_->timer->cancel();
-        local_scanning_service_->is_active = false;
-        return;
-    } 
-    local_scanning_service_->is_active = true;
-    local_scanning_service_->timer->expires_after(std::chrono::seconds(3));
-    local_scanning_service_->timer->async_wait([this]( const asio::error_code ec) {
-        local_scanning_service_->is_active = false;
-        if (!ec) {
-            std::vector<DiscoveredDevice> list_devices{local_scanning_service_->device_scaner->scanAllSubnet()};
-            table_->clearTable();
-            for (auto &i : list_devices) {
-                table_->addRow(i);
-            }
-            this->doLocalScanningService();
-        }
-    });
+    // if (local_scanning_service_->is_active) {
+    //     asio::error_code ec;
+    //     local_scanning_service_->timer->cancel();
+    //     local_scanning_service_->is_active = false;
+    //     return;
+    // } 
+    // local_scanning_service_->is_active = true;
+    // local_scanning_service_->timer->expires_after(std::chrono::seconds(3));
+    // local_scanning_service_->timer->async_wait([this]( const asio::error_code ec) {
+    //     local_scanning_service_->is_active = false;
+    //     if (!ec) {
+    //         std::vector<DiscoveredDevice> list_devices{local_scanning_service_->device_scaner->scanAllSubnet()};
+    //         table_->clearTable();
+    //         for (auto &i : list_devices) {
+    //             table_->addRow(i);
+    //         }
+    //         this->doLocalScanningService();
+    //     }
+    // });
 }
 
 void Window::doLocalClipboardService()
@@ -161,22 +165,22 @@ void Window::draw()
     bool fl = true;
     ImGui::Begin("LAN Control Center", &fl, window_flags);
 
-    // -> Верхнее меню
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("Device discovery method")) {
-            if (ImGui::MenuItem("TCP", "+")) {
+    // // -> Верхнее меню
+    // if (ImGui::BeginMenuBar()) {
+    //     if (ImGui::BeginMenu("Device discovery method")) {
+    //         if (ImGui::MenuItem("TCP", "+")) {
 
-            }
-            if (ImGui::MenuItem("ARP", "-")) {
+    //         }
+    //         if (ImGui::MenuItem("ARP", "-")) {
 
-            }
-            if (ImGui::MenuItem("ICMP", "-")) {
+    //         }
+    //         if (ImGui::MenuItem("ICMP", "-")) {
 
-            }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
+    //         }
+    //         ImGui::EndMenu();
+    //     }
+    //     ImGui::EndMenuBar();
+    // }
 
     // ImGui::SetWindowSize(ImVec2(1024, 768), ImGuiCond_Once);
 
