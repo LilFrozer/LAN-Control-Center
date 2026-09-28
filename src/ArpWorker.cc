@@ -1,6 +1,8 @@
 #include "DevicesFinder/ArpWorker.h"
 #include <iostream>
 
+#if defined(__APPLE__)
+
 std::map<std::string, std::string> MacosArpWorker::doReadArp() const 
 /*
  * 
@@ -39,6 +41,8 @@ void MacosArpWorker::set_cur_mode( const MacosArpMode mode )
     m_cur_mode = mode;
 }
 
+#elif defined(_WIN32)
+
 std::map<std::string, std::string> WindowsArpWorker::doReadArp() const
 /*
  *
@@ -47,6 +51,8 @@ std::map<std::string, std::string> WindowsArpWorker::doReadArp() const
 
 }
 
+#elif defined(__linux__)
+
 std::map<std::string, std::string> LinuxArpWorker::doReadArp() const
 /*
  *
@@ -54,3 +60,5 @@ std::map<std::string, std::string> LinuxArpWorker::doReadArp() const
 {
 
 }
+
+#endif

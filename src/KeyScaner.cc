@@ -8,6 +8,8 @@ void IKeyScaner::setCallBack( std::function<void()> signal )
     signal_ = std::move(signal);
 }
 
+#if defined(__APPLE__)
+
 std::string MacKeyScaner::get_text()
 /**
  * 
@@ -116,3 +118,9 @@ CGEventRef MacKeyScaner::systemScaning( CGEventTapProxy proxy, CGEventType type,
 
     return event;
 }
+
+#elif defined(_WIN32)
+
+#elif defined(__linux__)
+
+#endif

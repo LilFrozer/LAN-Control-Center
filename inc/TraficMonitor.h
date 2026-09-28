@@ -31,6 +31,8 @@ public:
     virtual void stopCapture() = 0;
 };
 
+#if defined(__APPLE__)
+
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <net/bpf.h>
@@ -64,3 +66,5 @@ public:
     void startCapture() override;
     void stopCapture() override;
 };
+
+#endif

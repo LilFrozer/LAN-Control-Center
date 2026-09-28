@@ -1,5 +1,7 @@
 #include "TraficMonitor.h"
 
+#if defined(__APPLE__)
+
 MacosTraficMonitor::MacosTraficMonitor( const std::string& iface ) 
 /**
  * 
@@ -261,3 +263,13 @@ void MacosTraficMonitor::printPacketInfo( struct ip* ip_hdr, DirectionPacketInfo
               << "  len=" << ntohs(ip_hdr->ip_len)
               << std::endl;
 }
+
+#elif defined(_WIN32)
+
+#elif defined(__linux__)
+
+#else
+
+#error "Unknown OS"
+
+#endif

@@ -27,6 +27,8 @@ std::vector<DeviceInfo> AbstractDeviceFinder::doScan( uint32_t timeout_ms )
     // auto subnets{ m_subnet_worker->doGetAllSubnets() };
 }
 
+#if defined(__APPLE__)
+
 MacosDeviceFinder::MacosDeviceFinder()
 /**
  * -> Конструктор для класса "Поиска устр-в в локальной сети" для системы MACOS
@@ -36,3 +38,9 @@ MacosDeviceFinder::MacosDeviceFinder()
     m_arp_worker = std::make_shared<MacosArpWorker>();
     std::cout << "MacosDeviceFinder()" << std::endl;
 }
+
+#elif defined(_WIN32)
+
+#elif defined(__linux__)
+
+#endif

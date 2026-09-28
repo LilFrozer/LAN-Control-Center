@@ -22,6 +22,8 @@ public:
     virtual std::vector<Subnet> doGetAllSubnets() const = 0;
 };
 
+#if defined(__APPLE__)
+
 /* 
     ! Для системы "Macos"
 */
@@ -29,6 +31,8 @@ class MacosSubnetWorker final : public ISubnetWorker, public std::enable_shared_
 public:
     std::vector<Subnet> doGetAllSubnets() const override;
 };
+
+#elif defined(_WIN32)
 
 /* 
     ! Для системы "Windows"
@@ -38,6 +42,8 @@ public:
     std::vector<Subnet> doGetAllSubnets() const override;
 };
 
+#elif defined(__linux__)
+
 /* 
     ! Для системы "Linux"
 */
@@ -45,3 +51,9 @@ class LinuxSubnetWorker final : public ISubnetWorker, public std::enable_shared_
 public:
     std::vector<Subnet> doGetAllSubnets() const override;
 };
+
+#else 
+
+#error "Unknown OS"
+
+#endif

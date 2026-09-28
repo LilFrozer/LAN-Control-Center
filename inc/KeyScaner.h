@@ -20,6 +20,8 @@ public:
     void setCallBack( std::function<void()> signal );
 };
 
+#if defined(__APPLE__)
+
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -35,3 +37,13 @@ public:
     void stopScan() override;
     std::string get_text() override;
 };
+
+#elif defined(_WIN32)
+
+#elif defined(__linux__)
+
+#else
+
+#error "Unknown OS"
+
+#endif

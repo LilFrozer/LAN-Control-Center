@@ -34,6 +34,8 @@ public:
     std::vector<DeviceInfo> doScan( uint32_t timeout_ms = 2000 );
 };
 
+#if defined(__APPLE__)
+
 class MacosDeviceFinder : public AbstractDeviceFinder, public std::enable_shared_from_this<MacosDeviceFinder> {
 private:
 
@@ -41,6 +43,8 @@ public:
     explicit MacosDeviceFinder();
     virtual ~MacosDeviceFinder() override = default;
 };
+
+#elif defined(_WIN32)
 
 // class WindowsDeviceFinder : public AbstractDeviceFinder, public std::enable_shared_from_this<WindowsDeviceFinder> {
 // /*
@@ -50,6 +54,14 @@ public:
 // public:
 //     
 // };
+
+#elif defined(__linux__)
+
+#else
+
+#error "Unknown OS"
+
+#endif
 
 // /* Модуль, сканирующий все подсети путем */
 // class DeviceFinder : public std::enable_shared_from_this<DeviceFinder> {

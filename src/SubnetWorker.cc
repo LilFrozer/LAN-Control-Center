@@ -1,4 +1,7 @@
 #include "DevicesFinder/SubnetWorker.h"
+
+#if defined(__APPLE__)
+
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <sys/socket.h>
@@ -42,6 +45,8 @@ std::vector<Subnet> MacosSubnetWorker::doGetAllSubnets() const
     std::cout << "MacosSubnetWorker::doGetAllSubnets()" << std::endl;
 }
 
+#elif defined(_WIN32)
+
 std::vector<Subnet> WindowsSubnetWorker::doGetAllSubnets() const
 /**
  * 
@@ -50,6 +55,8 @@ std::vector<Subnet> WindowsSubnetWorker::doGetAllSubnets() const
     
 }
 
+#elif defined(__linux__)
+
 std::vector<Subnet> LinuxSubnetWorker::doGetAllSubnets() const
 /**
  * 
@@ -57,3 +64,9 @@ std::vector<Subnet> LinuxSubnetWorker::doGetAllSubnets() const
 {
     
 }
+
+#else
+
+#error "Unknown OS"
+
+#endif

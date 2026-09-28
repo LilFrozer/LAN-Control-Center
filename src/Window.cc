@@ -69,7 +69,7 @@ void Window::onClipboardSlot()
 {
     std::thread([this]() {
         std::cout << "Pressed!" << std::endl;
-        std::cout << "Text: " << local_clipboard_service_->key_scaner->get_text() << std::endl;
+        // std::cout << "Text: " << local_clipboard_service_->key_scaner->get_text() << std::endl;
     }).detach();
 }
 
@@ -82,8 +82,8 @@ Window::Window( asio::io_context &ctx )
  * 
  */
 {   
-    m_device_finder = std::make_shared<MacosDeviceFinder>();
-    m_device_finder->doScan();
+    // m_device_finder = std::make_shared<MacosDeviceFinder>();
+    // m_device_finder->doScan();
 
     // local_clipboard_service_->key_scaner->setCallBack([this]() {
     //     onClipboardSlot();
@@ -121,15 +121,15 @@ void Window::doLocalClipboardService()
  * 
  */
 {
-    if (local_clipboard_service_->is_active) {
-        local_clipboard_service_->is_active = false;
-        local_clipboard_service_->key_scaner->stopScan();
-        local_clipboard_service_->multicast_bus->stopListen();
-        return;
-    }
-    local_clipboard_service_->is_active = true;
-    local_clipboard_service_->key_scaner->startScan();
-    local_clipboard_service_->multicast_bus->startListen();
+    // if (local_clipboard_service_->is_active) {
+    //     local_clipboard_service_->is_active = false;
+    //     local_clipboard_service_->key_scaner->stopScan();
+    //     local_clipboard_service_->multicast_bus->stopListen();
+    //     return;
+    // }
+    // local_clipboard_service_->is_active = true;
+    // local_clipboard_service_->key_scaner->startScan();
+    // local_clipboard_service_->multicast_bus->startListen();
 }
 
 void Window::doTraficMonitorService()

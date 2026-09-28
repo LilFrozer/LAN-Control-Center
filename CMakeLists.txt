@@ -10,12 +10,15 @@ find_package(glfw3 REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/extern/imgui)
-set(glfw3_DIR "/opt/homebrew/lib/cmake/glfw3")
+
+# if(APPLE)
+# set(glfw3_DIR "/opt/homebrew/lib/cmake/glfw3")
 file(GLOB IMGUI_SOURCES
     ${IMGUI_DIR}/*.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
+# endif()
 
 add_executable(local_scaner_prj
     src/main.cc
@@ -52,26 +55,24 @@ target_include_directories(local_scaner_prj PRIVATE
 target_compile_definitions(local_scaner_prj PRIVATE ASIO_STANDALONE)
 
 if(APPLE)
-# enable_language(OBJCXX)
-# set_source_files_properties(Clipboard.mm PROPERTIES
-# LANGUAGE OBJCXX
-# )
-find_package(OpenSSL REQUIRED)
-target_link_libraries(local_scaner_prj
-    "-framework CoreFoundation"
-    "-framework CoreGraphics"
-    "-framework ApplicationServices"
-    OpenSSL::SSL
-    OpenSSL::Crypto
-    SQLite::SQLite3
-    glfw
-    ${glfw3_LIBRARIES}
-    "-framework Cocoa"
-    "-framework OpenGL"
-    "-framework IOKit"
-)
-target_compile_definitions(local_scaner_prj PRIVATE
-    BOOST_BEAST_USE_STD_ERIC=1
-    BOOST_ASIO_USE_STD_ERIC=1
-)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(local_scaner_prj
+        "-framework CoreFoundation"
+        "-framework CoreGraphics"
+        "-framework ApplicationServices"
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        SQLite::SQLite3
+        glfw
+        ${glfw3_LIBRARIES}
+        "-framework Cocoa"
+        "-framework OpenGL"
+        "-framework IOKit"
+    )
+    target_compile_definitions(local_scaner_prj PRIVATE
+        BOOST_BEAST_USE_STD_ERIC=1
+        BOOST_ASIO_USE_STD_ERIC=1
+    )
+elseif(WIN32)
+    target_link_libraries(local_scaner_prj PRIVATE glfw ws2_32 gdi32 opengl32)
 endif()
