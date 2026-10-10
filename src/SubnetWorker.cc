@@ -47,12 +47,39 @@ std::vector<Subnet> MacosSubnetWorker::doGetAllSubnets() const
 
 #elif defined(_WIN32)
 
+void WindowsSubnetWorker::set_mode_getting_subnet( const ModeGettingSubnet &mode )
+{
+    this->m_mode_getting_subnet = mode;
+}
+
+ModeGettingSubnet WindowsSubnetWorker::get_mode_getting_subnet() const
+{
+    return this->m_mode_getting_subnet;
+}
+
 std::vector<Subnet> WindowsSubnetWorker::doGetAllSubnets() const
 /**
  * 
  */
 {
-    
+    switch (m_mode_getting_subnet) {
+        case ModeGettingSubnet::GetAdaptersAddresses: {
+            
+            break;
+        }
+        case ModeGettingSubnet::GetIpAddrTable: {
+            
+            break;
+        }
+        case ModeGettingSubnet::WmiCom: {
+
+            break;
+        }
+        case ModeGettingSubnet::WinSockApi: {
+
+            break;
+        }
+    }
 }
 
 #elif defined(__linux__)

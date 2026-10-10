@@ -62,7 +62,7 @@ private:
  */
 class Window : public std::enable_shared_from_this<Window> {
 private:
-    std::unique_ptr<DeviceTable> table_{nullptr};
+    std::unique_ptr<DeviceTable> m_devices_table{ nullptr };
 private:
     std::shared_ptr<AbstractDeviceFinder> m_device_finder { nullptr };
     // std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};

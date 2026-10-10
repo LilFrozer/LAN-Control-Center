@@ -73,17 +73,25 @@ void Window::onClipboardSlot()
     }).detach();
 }
 
-Window::Window( asio::io_context &ctx )
+Window::Window( asio::io_context &ctx ) :
     // m_device_finder(std::make_unique<LocalFinderDevicesTypes>(ctx, "/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db"))
-    // table_(std::make_unique<DeviceTable>())
+    m_devices_table(std::make_unique<DeviceTable>())
     // , local_clipboard_service_(std::make_shared<LocalSharedClipboard>(ctx))
     // , local_trafic_service_(std::make_shared<LocalTraficMonitor>())
 /**
  * 
  */
 {   
-    // m_device_finder = std::make_shared<MacosDeviceFinder>();
-    // m_device_finder->doScan();
+#if defined(__APPLE__)
+    m_device_finder = std::make_shared<MacosDeviceFinder>();
+#elif defined(WIN32)
+    m_device_finder = std::make_shared<WindowsDeviceFinder>();
+    m_device_finder->doScan();
+#elif defined(__linux__)
+    
+#else
+    throw std::runtime_error("Unknown OS!");
+#endif
 
     // local_clipboard_service_->key_scaner->setCallBack([this]() {
     //     onClipboardSlot();
@@ -160,33 +168,34 @@ void Window::draw()
                         ImGuiWindowFlags_NoResize | 
                         ImGuiWindowFlags_NoMove | 
                         ImGuiWindowFlags_NoBringToFrontOnFocus | 
-                        ImGuiWindowFlags_NoNavFocus);
+                        ImGuiWindowFlags_NoNavFocus |
+                        ImGuiWindowFlags_NoTitleBar);
 
     bool fl = true;
     ImGui::Begin("LAN Control Center", &fl, window_flags);
 
-    // // -> Верхнее меню
-    // if (ImGui::BeginMenuBar()) {
-    //     if (ImGui::BeginMenu("Device discovery method")) {
-    //         if (ImGui::MenuItem("TCP", "+")) {
+    // -> Верхнее меню
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("-")) {
+            // if (ImGui::MenuItem("TCP", "+")) {
 
-    //         }
-    //         if (ImGui::MenuItem("ARP", "-")) {
+            // }
+            // if (ImGui::MenuItem("ARP", "-")) {
 
-    //         }
-    //         if (ImGui::MenuItem("ICMP", "-")) {
+            // }
+            // if (ImGui::MenuItem("ICMP", "-")) {
 
-    //         }
-    //         ImGui::EndMenu();
-    //     }
-    //     ImGui::EndMenuBar();
-    // }
+            // }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 
     // ImGui::SetWindowSize(ImVec2(1024, 768), ImGuiCond_Once);
 
-    // if (ImGui::Button("Scan")) {
-    //     doLocalScanningService();
-    // }
+    if (ImGui::Button("doScan")) {
+        doLocalScanningService();
+    }
     // ImGui::Separator();
     // if (ImGui::Button("Clipboard")) {
     //     doLocalClipboardService();
@@ -197,9 +206,9 @@ void Window::draw()
     // }
     // ImGui::Separator();
 
-    // if (table_) {
-    //     table_->drawTable();
-    // }
+    if (m_devices_table) {
+        m_devices_table->drawTable();
+    }
 
     ImGui::End();
 }
