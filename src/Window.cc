@@ -82,16 +82,8 @@ Window::Window( asio::io_context &ctx ) :
  * 
  */
 {   
-#if defined(__APPLE__)
-    m_device_finder = std::make_shared<MacosDeviceFinder>();
-#elif defined(WIN32)
-    m_device_finder = std::make_shared<WindowsDeviceFinder>();
-    m_device_finder->doScan();
-#elif defined(__linux__)
-    
-#else
-    throw std::runtime_error("Unknown OS!");
-#endif
+    m_device_finder = std::make_shared<DeviceFinder>();
+    const auto devices{ m_device_finder->doScan() };
 
     // local_clipboard_service_->key_scaner->setCallBack([this]() {
     //     onClipboardSlot();

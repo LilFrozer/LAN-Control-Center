@@ -11,14 +11,14 @@ find_package(SQLite3 REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/extern/imgui)
 
-# if(APPLE)
-# set(glfw3_DIR "/opt/homebrew/lib/cmake/glfw3")
+if(APPLE)
+    set(glfw3_DIR "/opt/homebrew/lib/cmake/glfw3")
+endif()
 file(GLOB IMGUI_SOURCES
     ${IMGUI_DIR}/*.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
-# endif()
 
 add_executable(local_scaner_prj
     src/main.cc

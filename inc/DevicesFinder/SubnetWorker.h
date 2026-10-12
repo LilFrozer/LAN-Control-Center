@@ -8,9 +8,11 @@
 /* 
     ! Данные одной подсети 
 */
-struct Subnet {
-    uint32_t addr { 0 };
-    uint32_t mask { 0 };
+struct Ipv4SubnetInfo {
+    std::string if_name{};
+    std::pair<unsigned, std::string> if_addr{};
+    std::pair<unsigned, std::string> if_flags{};
+    std::pair<unsigned, std::string> if_mask{};
 };
 
 /* 
@@ -19,7 +21,7 @@ struct Subnet {
 class ISubnetWorker {
 public:
     virtual ~ISubnetWorker() = default;
-    virtual std::vector<Subnet> doGetAllSubnets() const = 0;
+    virtual std::vector<Ipv4SubnetInfo> doGetAllSubnets() const = 0;
 };
 
 #if defined(__APPLE__)
@@ -29,7 +31,7 @@ public:
 */
 class MacosSubnetWorker final : public ISubnetWorker, public std::enable_shared_from_this<MacosSubnetWorker> {
 public:
-    std::vector<Subnet> doGetAllSubnets() const override;
+    std::vector<Ipv4SubnetInfo> doGetAllSubnets() const override;
 };
 
 #elif defined(_WIN32)

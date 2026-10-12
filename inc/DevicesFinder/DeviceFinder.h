@@ -27,5 +27,5 @@ protected:
     PingMode m_ping_mode { PingMode::Icmp };
 public:
     explicit DeviceFinder();
-    std::vector<DeviceInfo> doScan( uint32_t timeout_ms = 2000 );
+    std::vector<DeviceInfo> doScan( uint32_t timeout_ms = 2000 ) const;
 };
