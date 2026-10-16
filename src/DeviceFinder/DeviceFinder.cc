@@ -1,0 +1,103 @@
+#include "DevicesFinder/DeviceFinder.h"
+#include <iostream>
+
+// -> Конструктор класса DevicesWorker, детектит операционную систему и соответствующий интерфейс
+DevicesWorker::DevicesWorker() {
+#if defined(__APPLE__)
+    m_system_worker = std::make_shared<MacosSystemWorker>();
+    std::cout << "DevicesWorker: MACOS`s detected!" << std::endl;
+#elif defined(WIN32)
+    // m_system_worker = std::make_shared<>();
+    std::cout << "DevicesWorker: WINDOWS`s detected!" << std::endl;
+#elif defined(__linux__)
+    // m_system_worker = std::make_shared<>();
+    std::cout << "DevicesWorker: LINUX`s detected!" << std::endl;
+#endif
+}
+
+// -> начинаем сканирование устр-в
+std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
+    std::vector<DeviceInfo> devices{};
+
+    if (!m_system_worker) {
+        return {};
+    }
+
+    // -> 1. находим все подсети текущего устр-ва
+    const auto subnets{ m_system_worker->doGetAllSubnets() };
+    for (const auto &subnet : subnets) {
+        std::cout << subnet.if_name << "/" << subnet.if_addr.second << "/"
+            << subnet.if_mask.second << "/" << subnet.if_flags.second << std::endl;
+
+        if (subnet.if_flags.first & IFF_LOOPBACK) {
+            // -> пропускаем 127.0.0.1(loopback-интерфейс)
+            continue;
+        }
+
+        // -> 2. начинаем сканировать
+        std::mutex devices_mutex;
+
+        uint32_t host_bits{~subnet.if_mask.first};
+        uint32_t net_addr{subnet.if_addr.first & subnet.if_mask.first};
+        uint32_t broadcast_addr{net_addr | host_bits};
+
+        uint64_t host_count = static_cast<uint64_t>(host_bits) + 1;
+        constexpr uint64_t MAX_HOSTS = 1u << 16;   // 65 536
+        if (host_count > MAX_HOSTS) {
+            // -> пропускаем огромные подсети
+            std::cerr << "ERROR: Skipping huge subnet: " << subnet.if_name
+                      << " (" << host_count << " hosts)" << std::endl;
+            continue;
+        }
+
+        std::vector<std::thread> workers{};
+        std::atomic<uint32_t> next_ip{net_addr + 1};
+
+        uint32_t thread_count = std::max(1u, std::min(64u, std::thread::hardware_concurrency() * 8));
+
+        for (auto i = 0; i < thread_count; ++i) {
+            workers.emplace_back([&]() {
+                uint32_t if_addr{0};
+                while ((if_addr = next_ip.fetch_add(1)) < broadcast_addr) {
+                    if (m_system_worker->doPing(PingMode::Tcp, if_addr, 300)) {
+                        DeviceInfo device{};
+
+                        sockaddr_in sa{};
+                        sa.sin_family = AF_INET;
+                        sa.sin_addr.s_addr = htonl(if_addr);
+
+                        char host[NI_MAXHOST] = {};
+                        const int ret = getnameinfo(reinterpret_cast<sockaddr*>(&sa), sizeof(sa),
+                                            host, sizeof(host), nullptr, 0, NI_NAMEREQD);
+
+                        // -> определяем имя хоста
+                        if (ret == 0) {
+                            device.hostname = host;
+                        } else {
+                            device.hostname = "NULL";
+                        }
+
+                        // -> определяем ipv4 адрес
+                        char ipv4[INET_ADDRSTRLEN]{""};
+                        inet_ntop(AF_INET, &sa.sin_addr, ipv4, sizeof(ipv4));
+                        device.addr = ipv4;
+
+                        // -> определяем какое сетевое устр-во обнаружило это устр-во
+                        device.subnet = subnet.if_name;
+
+                        {
+                            std::lock_guard<std::mutex> lock(devices_mutex);
+                            devices.push_back(std::move(device));
+                        }
+                    }
+                }
+            });
+        }
+
+        for (auto& w : workers) {
+            w.join();
+        }
+    }
+
+    return devices;
+}

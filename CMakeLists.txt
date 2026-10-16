@@ -36,13 +36,16 @@ add_executable(local_scaner_prj
 
     inc/DevicesFinder/ArpWorker.h
     inc/DevicesFinder/DeviceFinder.h
-    inc/DevicesFinder/SubnetWorker.h
-    inc/DevicesFinder/VendorWorker.h
+        inc/DevicesFinder/VendorWorker.h
 
-    src/ArpWorker.cc
-    src/DeviceFinder.cc
-    src/SubnetWorker.cc
-    src/VendorWorker.cc
+        src/DeviceFinder/ArpWorker.cc
+        src/DeviceFinder/DeviceFinder.cc
+        src/VendorWorker.cc
+        inc/DevicesFinder/SystemWorker/SystemWorker.h
+        inc/DevicesFinder/SystemWorker/MacosSystemWorker.h
+        src/DeviceFinder/SystemWorker/MacosSystemWorker.cc
+        inc/DevicesFinder/SystemWorker/WindowsSystemWorker.h
+        inc/DevicesFinder/SystemWorker/LinuxSystemWorker.h
 )
 
 target_include_directories(local_scaner_prj PRIVATE

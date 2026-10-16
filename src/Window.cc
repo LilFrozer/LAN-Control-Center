@@ -82,8 +82,16 @@ Window::Window( asio::io_context &ctx ) :
  * 
  */
 {   
-    m_device_finder = std::make_shared<DeviceFinder>();
-    const auto devices{ m_device_finder->doScan() };
+    m_devices_finder = std::make_shared<DevicesWorker>();
+    const auto devices{ m_devices_finder->doScan() };
+    for (const auto &device : devices) {
+        std::cout << device.subnet << "/"
+        << device.addr << "/"
+        << device.hostname << "/"
+        << device.mac << "/"
+        << device.vendor << "/"
+        << std::endl;
+    }
 
     // local_clipboard_service_->key_scaner->setCallBack([this]() {
     //     onClipboardSlot();

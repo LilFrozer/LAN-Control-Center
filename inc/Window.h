@@ -62,9 +62,9 @@ private:
  */
 class Window final : public std::enable_shared_from_this<Window> {
 private:
-    std::unique_ptr<DeviceTable> m_devices_table { nullptr };
+    std::unique_ptr<DeviceTable> m_devices_table{ nullptr };
 private:
-    std::shared_ptr<DeviceFinder> m_device_finder { nullptr };
+    std::shared_ptr<DevicesWorker> m_devices_finder{ nullptr };
     // std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};
     // std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
     void onClipboardSlot();

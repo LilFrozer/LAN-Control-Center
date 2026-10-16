@@ -1,1 +1,31 @@
-/build
+# --- IDE ---
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# --- macOS ---
+.DS_Store
+
+# --- CMake / build ---
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.a
+*.so
+*.dylib
+
+# --- C++ ---
+*.d
+*.gcda
+*.gcno
+*.gcov
+
+# --- прочее ---
+*.log
+*.tmp

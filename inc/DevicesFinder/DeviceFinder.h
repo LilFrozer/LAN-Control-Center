@@ -3,29 +3,28 @@
 
 #include <string>
 #include <cstdint>
-#include "DevicesFinder/SubnetWorker.h"
+#include "DevicesFinder/SystemWorker/MacosSystemWorker.h"
+#include "DevicesFinder/SystemWorker/WindowsSystemWorker.h"
+#include "DevicesFinder/SystemWorker/LinuxSystemWorker.h"
 #include "DevicesFinder/ArpWorker.h"
+#include <thread>
 
 struct DeviceInfo {
-    std::string subnet { "" };
-    std::string addr { "" };
-    std::string mac { "" };
-    std::string hostname { "" };
-    std::string vendor { "" };
+    std::string subnet{};
+    std::string addr{};
+    std::string mac{};
+    std::string hostname{};
+    std::string vendor{};
 };
 
-enum class PingMode : uint32_t {
-    Icmp = 0,
-    Tcp80,
-    Arp
-};
-
-class DeviceFinder : public std::enable_shared_from_this<DeviceFinder> {
+class DevicesWorker : public std::enable_shared_from_this<DevicesWorker> {
 protected:
-    std::shared_ptr<ISubnetWorker> m_subnet_worker { nullptr };
-    std::shared_ptr<IArpWorker> m_arp_worker { nullptr };
-    PingMode m_ping_mode { PingMode::Icmp };
+    std::shared_ptr<ISystemWorker> m_system_worker{ nullptr };
+    std::shared_ptr<IArpWorker> m_arp_worker{ nullptr };
 public:
-    explicit DeviceFinder();
+    explicit DevicesWorker();
+    // -> начинаем сканирование утср-в
     std::vector<DeviceInfo> doScan( uint32_t timeout_ms = 2000 ) const;
+    // -> Сообщение в gui через систему сигнал+слот
+    std::function<void( const std::string &msg )> logMessage;
 };
