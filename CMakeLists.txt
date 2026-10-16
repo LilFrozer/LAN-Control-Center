@@ -34,11 +34,11 @@ add_executable(local_scaner_prj
     inc/TraficMonitor.h
     src/TraficMonitor.cc
 
-    inc/DevicesFinder/ArpWorker.h
+        inc/DevicesFinder/ArpWorker/ArpWorker.h
     inc/DevicesFinder/DeviceFinder.h
         inc/DevicesFinder/VendorWorker.h
 
-        src/DeviceFinder/ArpWorker.cc
+        src/DeviceFinder/ArpWorker/MacosArpWorker.cc
         src/DeviceFinder/DeviceFinder.cc
         src/VendorWorker.cc
         inc/DevicesFinder/SystemWorker/SystemWorker.h
@@ -46,6 +46,9 @@ add_executable(local_scaner_prj
         src/DeviceFinder/SystemWorker/MacosSystemWorker.cc
         inc/DevicesFinder/SystemWorker/WindowsSystemWorker.h
         inc/DevicesFinder/SystemWorker/LinuxSystemWorker.h
+        inc/DevicesFinder/ArpWorker/MacosArpWorker.h
+        inc/DevicesFinder/ArpWorker/WindowsArpWorker.h
+        inc/DevicesFinder/ArpWorker/LinuxArpWorker.h
 )
 
 target_include_directories(local_scaner_prj PRIVATE

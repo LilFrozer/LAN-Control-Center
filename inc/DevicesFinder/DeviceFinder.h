@@ -6,8 +6,10 @@
 #include "DevicesFinder/SystemWorker/MacosSystemWorker.h"
 #include "DevicesFinder/SystemWorker/WindowsSystemWorker.h"
 #include "DevicesFinder/SystemWorker/LinuxSystemWorker.h"
-#include "DevicesFinder/ArpWorker.h"
+#include "DevicesFinder/ArpWorker/ArpWorker.h"
+#include "DevicesFinder/ArpWorker/MacosArpWorker.h"
 #include <thread>
+#include <iostream>
 
 struct DeviceInfo {
     std::string subnet{};

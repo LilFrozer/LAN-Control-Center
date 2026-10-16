@@ -1,17 +1,14 @@
 #include "DevicesFinder/DeviceFinder.h"
-#include <iostream>
 
 // -> Конструктор класса DevicesWorker, детектит операционную систему и соответствующий интерфейс
 DevicesWorker::DevicesWorker() {
 #if defined(__APPLE__)
     m_system_worker = std::make_shared<MacosSystemWorker>();
-    std::cout << "DevicesWorker: MACOS`s detected!" << std::endl;
+    m_arp_worker = std::make_shared<MacosArpWorker>();
 #elif defined(WIN32)
     // m_system_worker = std::make_shared<>();
-    std::cout << "DevicesWorker: WINDOWS`s detected!" << std::endl;
 #elif defined(__linux__)
     // m_system_worker = std::make_shared<>();
-    std::cout << "DevicesWorker: LINUX`s detected!" << std::endl;
 #endif
 }
 
@@ -96,6 +93,13 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
 
         for (auto& w : workers) {
             w.join();
+        }
+    }
+
+    auto addr_mac{m_arp_worker->doReadArp(ArpGettingMode::System)};
+    for (auto &device : devices) {
+        if (addr_mac.find(device.addr) != addr_mac.end()) {
+            device.mac = addr_mac[device.addr];
         }
     }
 
