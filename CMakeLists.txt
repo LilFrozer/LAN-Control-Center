@@ -34,21 +34,24 @@ add_executable(local_scaner_prj
     inc/TraficMonitor.h
     src/TraficMonitor.cc
 
-        inc/DevicesFinder/ArpWorker/ArpWorker.h
+    inc/DevicesFinder/ArpWorker/ArpWorker.h
     inc/DevicesFinder/DeviceFinder.h
-        inc/DevicesFinder/VendorWorker.h
+    inc/DevicesFinder/VendorWorker/VendorWorker.h
 
-        src/DeviceFinder/ArpWorker/MacosArpWorker.cc
-        src/DeviceFinder/DeviceFinder.cc
-        src/VendorWorker.cc
-        inc/DevicesFinder/SystemWorker/SystemWorker.h
-        inc/DevicesFinder/SystemWorker/MacosSystemWorker.h
-        src/DeviceFinder/SystemWorker/MacosSystemWorker.cc
-        inc/DevicesFinder/SystemWorker/WindowsSystemWorker.h
-        inc/DevicesFinder/SystemWorker/LinuxSystemWorker.h
-        inc/DevicesFinder/ArpWorker/MacosArpWorker.h
-        inc/DevicesFinder/ArpWorker/WindowsArpWorker.h
-        inc/DevicesFinder/ArpWorker/LinuxArpWorker.h
+    src/DeviceFinder/ArpWorker/MacosArpWorker.cc
+    src/DeviceFinder/DeviceFinder.cc
+    inc/DevicesFinder/SystemWorker/SystemWorker.h
+    inc/DevicesFinder/SystemWorker/MacosSystemWorker.h
+    src/DeviceFinder/SystemWorker/MacosSystemWorker.cc
+    inc/DevicesFinder/SystemWorker/WindowsSystemWorker.h
+    inc/DevicesFinder/SystemWorker/LinuxSystemWorker.h
+    inc/DevicesFinder/ArpWorker/MacosArpWorker.h
+    inc/DevicesFinder/ArpWorker/WindowsArpWorker.h
+    inc/DevicesFinder/ArpWorker/LinuxArpWorker.h
+    inc/DevicesFinder/VendorWorker/VendorWorkerDatabase.h
+    inc/DevicesFinder/VendorWorker/VendorWorkerCsv.h
+    src/DeviceFinder/VendorWorker/VendorWorkerDatabase.cc
+    src/DeviceFinder/VendorWorker/VendorWorkerCsv.cc
 )
 
 target_include_directories(local_scaner_prj PRIVATE

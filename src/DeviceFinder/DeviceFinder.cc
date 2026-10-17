@@ -12,6 +12,30 @@ DevicesWorker::DevicesWorker() {
 #endif
 }
 
+// -> выбираем, как будем определять vendor
+void DevicesWorker::chooseVendorWorker( const VendorMode &mode ) {
+    if (!m_vendor_worker)
+        m_vendor_worker.reset();
+
+    switch (mode) {
+        case VendorMode::Csv: {
+            break;
+        }
+        case VendorMode::Database: {
+            m_vendor_worker = std::make_shared<VendorWorkerDatabase>();
+            // -> Обновляем данные с официальных источников при налачии интернет соединения
+            m_vendor_worker->updateFilesFromOfficialSrc();
+            // -> грузим дефолтную базу данных
+            m_vendor_worker->loadFile("", true);
+            break;
+        }
+        default: {
+
+            break;
+        }
+    }
+}
+
 // -> начинаем сканирование устр-в
 std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
     std::vector<DeviceInfo> devices{};
@@ -34,11 +58,11 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
         // -> 2. начинаем сканировать
         std::mutex devices_mutex;
 
-        uint32_t host_bits{~subnet.if_mask.first};
-        uint32_t net_addr{subnet.if_addr.first & subnet.if_mask.first};
-        uint32_t broadcast_addr{net_addr | host_bits};
+        const uint32_t host_bits{~subnet.if_mask.first};
+        const uint32_t net_addr{subnet.if_addr.first & subnet.if_mask.first};
+        const uint32_t broadcast_addr{net_addr | host_bits};
 
-        uint64_t host_count = static_cast<uint64_t>(host_bits) + 1;
+        const uint64_t host_count = static_cast<uint64_t>(host_bits) + 1;
         constexpr uint64_t MAX_HOSTS = 1u << 16;   // 65 536
         if (host_count > MAX_HOSTS) {
             // -> пропускаем огромные подсети
@@ -50,7 +74,7 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
         std::vector<std::thread> workers{};
         std::atomic<uint32_t> next_ip{net_addr + 1};
 
-        uint32_t thread_count = std::max(1u, std::min(64u, std::thread::hardware_concurrency() * 8));
+        const uint32_t thread_count = std::max(1u, std::min(64u, std::thread::hardware_concurrency() * 8));
 
         for (auto i = 0; i < thread_count; ++i) {
             workers.emplace_back([&]() {

@@ -83,6 +83,7 @@ Window::Window( asio::io_context &ctx ) :
  */
 {   
     m_devices_finder = std::make_shared<DevicesWorker>();
+    m_devices_finder->chooseVendorWorker(VendorMode::Database);
     const auto devices{ m_devices_finder->doScan() };
     for (const auto &device : devices) {
         std::cout << device.subnet << "/"

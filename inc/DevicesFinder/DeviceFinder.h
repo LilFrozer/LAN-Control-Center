@@ -8,6 +8,9 @@
 #include "DevicesFinder/SystemWorker/LinuxSystemWorker.h"
 #include "DevicesFinder/ArpWorker/ArpWorker.h"
 #include "DevicesFinder/ArpWorker/MacosArpWorker.h"
+#include "DevicesFinder/VendorWorker/VendorWorker.h"
+#include "DevicesFinder/VendorWorker/VendorWorkerCsv.h"
+#include "DevicesFinder/VendorWorker/VendorWorkerDatabase.h"
 #include <thread>
 #include <iostream>
 
@@ -23,8 +26,11 @@ class DevicesWorker : public std::enable_shared_from_this<DevicesWorker> {
 protected:
     std::shared_ptr<ISystemWorker> m_system_worker{ nullptr };
     std::shared_ptr<IArpWorker> m_arp_worker{ nullptr };
+    std::shared_ptr<IVendorWorker> m_vendor_worker{ nullptr };
 public:
     explicit DevicesWorker();
+    // -> выбираем, как будем определять vendor
+    void chooseVendorWorker( const VendorMode &mode );
     // -> начинаем сканирование утср-в
     std::vector<DeviceInfo> doScan( uint32_t timeout_ms = 2000 ) const;
     // -> Сообщение в gui через систему сигнал+слот
