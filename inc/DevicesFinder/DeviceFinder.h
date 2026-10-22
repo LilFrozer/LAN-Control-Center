@@ -13,6 +13,7 @@
 #include "DevicesFinder/VendorWorker/VendorWorkerDatabase.h"
 #include <thread>
 #include <iostream>
+#include <asio.hpp>
 
 struct DeviceInfo {
     std::string subnet{};
@@ -20,6 +21,13 @@ struct DeviceInfo {
     std::string mac{};
     std::string hostname{};
     std::string vendor{};
+};
+
+struct TimeoutDevicesWorker {
+    bool is_active{false};
+    std::unique_ptr<asio::steady_timer> timer{ nullptr };
+    explicit TimeoutDevicesWorker( asio::io_context &ctx ) :
+        timer(std::make_unique<asio::steady_timer>(ctx)) {}
 };
 
 class DevicesWorker : public std::enable_shared_from_this<DevicesWorker> {

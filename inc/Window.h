@@ -9,23 +9,14 @@
 
 class DeviceTable {
 public:
-    // void addRow(const DiscoveredDevice& device);
+    void addDevice( const DeviceInfo& device );
     void clearTable();
-    size_t getRowCount() const;
-    void drawTable();
+    void drawTable() const;
 private:
-    // std::vector<DiscoveredDevice> data_;
+    std::vector<DeviceInfo> m_devices_data;
     mutable std::mutex mutex_;
 };
 
-// /**
-//  * -> Сканирование всех устройств в локальной сети
-//  */
-// enum class ModeScanningDevices : u32 {
-//     Tcp = 0,
-//     Arp,
-//     Icmp
-// };
 
 // struct LocalFinderDevicesTypes : public std::enable_shared_from_this<LocalFinderDevicesTypes> {
 //     bool is_active = false;
@@ -63,8 +54,8 @@ private:
 class Window final : public std::enable_shared_from_this<Window> {
 private:
     std::unique_ptr<DeviceTable> m_devices_table{ nullptr };
-private:
-    std::shared_ptr<DevicesWorker> m_devices_finder{ nullptr };
+    std::pair<std::unique_ptr<TimeoutDevicesWorker>, std::unique_ptr<DevicesWorker>> m_device_finder{};
+
     // std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};
     // std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
     void onClipboardSlot();
