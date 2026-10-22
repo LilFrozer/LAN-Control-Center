@@ -27,6 +27,11 @@ enum class PingMode : uint32_t {
     Ssdp,
 };
 
+enum class ArpGettingMode : uint32_t {
+    Terminal = 0,
+    System
+};
+
 // -> интерфейс для системных вызовов
 class ISystemWorker {
 public:
@@ -37,4 +42,6 @@ public:
     virtual bool doPing( const PingMode &ping_mode, const uint32_t &if_addr, const uint32_t &timeout_ms ) = 0;
     // -> поиск всех интерфейсов на устройстве
     virtual std::vector<Ipv4SubnetInfo> doGetAllSubnets() const = 0;
+    // -> считываем таблицу arp после ping-а
+    virtual std::unordered_map<std::string, std::string> doReadArp( const ArpGettingMode &mode ) const = 0;
 };

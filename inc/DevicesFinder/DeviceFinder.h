@@ -6,8 +6,6 @@
 #include "DevicesFinder/SystemWorker/MacosSystemWorker.h"
 #include "DevicesFinder/SystemWorker/WindowsSystemWorker.h"
 #include "DevicesFinder/SystemWorker/LinuxSystemWorker.h"
-#include "DevicesFinder/ArpWorker/ArpWorker.h"
-#include "DevicesFinder/ArpWorker/MacosArpWorker.h"
 #include "DevicesFinder/VendorWorker/VendorWorker.h"
 #include "DevicesFinder/VendorWorker/VendorWorkerCsv.h"
 #include "DevicesFinder/VendorWorker/VendorWorkerDatabase.h"
@@ -33,7 +31,6 @@ struct TimeoutDevicesWorker {
 class DevicesWorker : public std::enable_shared_from_this<DevicesWorker> {
 protected:
     std::shared_ptr<ISystemWorker> m_system_worker{ nullptr };
-    std::shared_ptr<IArpWorker> m_arp_worker{ nullptr };
     std::shared_ptr<IVendorWorker> m_vendor_worker{ nullptr };
 public:
     explicit DevicesWorker();

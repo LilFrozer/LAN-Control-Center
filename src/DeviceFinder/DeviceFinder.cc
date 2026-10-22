@@ -4,7 +4,6 @@
 DevicesWorker::DevicesWorker() {
 #if defined(__APPLE__)
     m_system_worker = std::make_shared<MacosSystemWorker>();
-    m_arp_worker = std::make_shared<MacosArpWorker>();
 #elif defined(WIN32)
     // m_system_worker = std::make_shared<>();
 #elif defined(__linux__)
@@ -120,7 +119,7 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
         }
     }
 
-    auto addr_mac{m_arp_worker->doReadArp(ArpGettingMode::System)};
+    auto addr_mac{m_system_worker->doReadArp(ArpGettingMode::System)};
     for (auto &device : devices) {
         if (addr_mac.find(device.addr) != addr_mac.end()) {
             device.mac = addr_mac[device.addr];
