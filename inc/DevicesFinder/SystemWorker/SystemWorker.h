@@ -9,10 +9,10 @@
 // -> данные ipv4 подсети текущего устр-ва
 struct Ipv4SubnetInfo {
     std::string if_name{};
-    using Param = std::pair<uint32_t, std::string>;
-    Param if_addr{};
-    Param if_flags{};
-    Param if_mask{};
+    using Options = std::pair<uint32_t, std::string>;
+    Options if_addr{};
+    Options if_flags{};
+    Options if_mask{};
 };
 
 // -> режим сканирования устройства

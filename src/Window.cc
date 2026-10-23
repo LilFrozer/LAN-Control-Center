@@ -11,45 +11,98 @@ void DeviceTable::clearTable() {
     m_devices_data.clear();
 }
 
-void DeviceTable::drawTable() const {
+void DeviceTable::  drawTable() const {
     std::vector<DeviceInfo> devices_copy;
     {
         std::lock_guard<std::mutex> lock(mutex_);
         devices_copy = m_devices_data;
     }
 
-    // 2. Включаем флаг SizingFixedSame для корректного авторазмера колонок по тексту
-    if (ImGui::BeginTable("##DATA", 6,
-                          ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
-                          ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedSame))
-    {
-        ImGui::TableSetupColumn("Локальная подсеть", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("IPV4", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("Имя устройства", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("MAC", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("VENDOR", ImGuiTableColumnFlags_WidthStretch);
+    constexpr float MIN_CARD_WIDTH = 260.0f;
+    const float avail = ImGui::GetContentRegionAvail().x;
+    const int cols = std::max(1, static_cast<int>(avail / (MIN_CARD_WIDTH + ImGui::GetStyle().ItemSpacing.x)));
 
-        ImGui::TableSetupColumn("ACTION", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableHeadersRow();
-
-        for (size_t i=0;i<devices_copy.size();++i) {
-            const auto &device = devices_copy[i];
-            ImGui::TableNextRow();
-
-            ImGui::TableNextColumn(); ImGui::TextUnformatted(device.subnet.c_str());
-            ImGui::TableNextColumn(); ImGui::TextUnformatted(device.addr.c_str());
-            ImGui::TableNextColumn(); ImGui::TextUnformatted(device.hostname.c_str());
-            ImGui::TableNextColumn(); ImGui::TextUnformatted(device.mac.c_str());
-            ImGui::TableNextColumn(); ImGui::TextUnformatted(device.vendor.c_str());
-
+    if (ImGui::BeginTable("##device_map", cols, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_PadOuterX)) {
+        for (size_t i = 0; i < devices_copy.size(); ++i) {
             ImGui::TableNextColumn();
-            std::string button_label = " Connect#" + std::to_string(i) + " ";
+            ImGui::PushID(static_cast<int>(i));
 
-            if (ImGui::Button(button_label.c_str())) {
-                // this->onDeviceActionTriggered(dev);
+            // --- стилизация карточки ---
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10)); // ← отступ текста от рамки
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.12f, 0.12f, 0.14f, 1.0f));
+
+            // ширина = 0 → занять всю ширину колонки (автомасштаб)
+            if (ImGui::BeginChild("##card", ImVec2(0, 150), ImGuiChildFlags_AlwaysUseWindowPadding)) {
+                ImGui::TextColored(ImVec4(0.3f,0.9f,0.3f,1.0f), "Онлайн");
+                ImGui::SameLine();
+                ImGui::TextUnformatted(("-> " + devices_copy[i].addr).c_str());
+
+                ImGui::Separator();
+
+                ImGui::TextUnformatted("Подсеть ->");
+                ImGui::SameLine();
+                ImGui::TextUnformatted(devices_copy[i].subnet.c_str());
+
+                ImGui::Separator();
+
+                ImGui::TextUnformatted("Имя ->");
+                ImGui::SameLine();
+                ImGui::TextUnformatted(devices_copy[i].hostname.c_str());
+
+                ImGui::Separator();
+
+                ImGui::TextUnformatted("Mac ->");
+                ImGui::SameLine();
+                ImGui::TextUnformatted(devices_copy[i].mac.c_str());
+
+                ImGui::Separator();
+
+                ImGui::TextUnformatted("Vendor ->");
+                ImGui::SameLine();
+                ImGui::TextUnformatted(devices_copy[i].vendor.c_str());
+
+                ImGui::Separator();
+
+                if (ImGui::BeginTable("##metrics", 2, ImGuiTableFlags_SizingStretchProp)) {
+                    ImGui::TableSetupColumn("label", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+                    ImGui::TableSetupColumn("bar",   ImGuiTableColumnFlags_WidthStretch);
+
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::TextUnformatted("CPU");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::ProgressBar(0.2f, ImVec2(-FLT_MIN, 14), nullptr);
+
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::TextUnformatted("GPU");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::ProgressBar(0.2f, ImVec2(-FLT_MIN, 14), nullptr);
+
+                    ImGui::EndTable();
+                }
+
+                ImGui::Spacing();
+
+                // -> Кнопки
+                if (ImGui::Button("Клавиатура", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+
+                }
+                // ImGui::SameLine();
+                // if (ImGui::Button("", ImVec2(btn_w, 0)))     { /* ... */ }
+                // ImGui::SameLine();
+                // if (ImGui::Button("", ImVec2(btn_w, 0)))  { /* ... */ }
             }
-        }
+            ImGui::EndChild();
 
+            ImGui::PopStyleColor();
+            ImGui::PopStyleVar(3);
+            ImGui::PopID();
+        }
         ImGui::EndTable();
     }
 }
@@ -176,12 +229,12 @@ void Window::draw()
 
     // -> Верхнее меню
     if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("-")) {
-            // if (ImGui::MenuItem("TCP", "+")) {
-
+        if (ImGui::BeginMenu("Настройки")) {
+            // if (ImGui::MenuItem("Общий", "ВЫКЛЮЧЕН")) {
+            //
             // }
-            // if (ImGui::MenuItem("ARP", "-")) {
-
+            // if (ImGui::MenuItem("Мониторинг")) {
+            //
             // }
             // if (ImGui::MenuItem("ICMP", "-")) {
 
@@ -191,31 +244,29 @@ void Window::draw()
         ImGui::EndMenuBar();
     }
 
-    // ImGui::SetWindowSize(ImVec2(1024, 768), ImGuiCond_Once);
-
-    const auto &timer_object = m_device_finder.first;
-    if (ImGui::Button(timer_object->is_active ? " Остановить поиск! " : " Начать поиск! ")) {
-        if (timer_object->is_active) {
-            timer_object->is_active = false;
-            timer_object->timer->cancel();
-        } else {
-            doLocalScanningService();
+    ImGui::TextDisabled("Обнаружение устройств!");
+    ImGui::Spacing();
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.6f, 1.0f, 1.0f));
+    if (ImGui::BeginChild("##device_map", ImVec2(0, 260), ImGuiChildFlags_Borders)) {
+        const auto &timer_object{ m_device_finder.first };
+        if (ImGui::Button(timer_object->is_active ? "Остановить поиск!" : "Начать поиск!", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            if (timer_object->is_active) {
+                timer_object->is_active = false;
+                timer_object->timer->cancel();
+            } else {
+                doLocalScanningService();
+            }
+        }
+        if (m_devices_table) {
+            m_devices_table->drawTable();
         }
     }
+    ImGui::EndChild();
+    ImGui::PopStyleColor(); // цвет
+    ImGui::PopStyleVar();   // толщина
+
     ImGui::Separator();
-
-    // if (ImGui::Button("Clipboard")) {
-    //     doLocalClipboardService();
-    // }
-    // ImGui::SameLine();
-    // if (ImGui::Button("TraficMonitor")) {
-    //     doTraficMonitorService();
-    // }
-    // ImGui::Separator();
-
-    if (m_devices_table) {
-        m_devices_table->drawTable();
-    }
 
     ImGui::End();
 }

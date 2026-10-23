@@ -192,18 +192,18 @@ std::unordered_map<std::string, std::string> MacosSystemWorker::doReadArp( const
 
     switch (mode) {
         case ArpGettingMode::Terminal: {
-            std::array<char, 128> buffer = {};
-
-            std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("arp -an", "r"), pclose);
-            if (!pipe) {
-                throw std::runtime_error("popen() failed");
-            }
-
-            // * Читаем вывод
-            while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-                std::string line(buffer.data());
-                std::cout << line << std::endl;
-            }
+            // std::array<char, 128> buffer = {};
+            //
+            // std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("arp -an", "r"), pclose);
+            // if (!pipe) {
+            //     throw std::runtime_error("popen() failed");
+            // }
+            //
+            // // * Читаем вывод
+            // while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+            //     std::string line(buffer.data());
+            //     std::cout << line << std::endl;
+            // }
 
             break;
         }
