@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DevicesFinder/VendorWorker/VendorWorker.h"
+#include "Core/DevicesFinder/VendorWorker/VendorWorker.h"
 #include <sqlite3.h>
 #include <iostream>
 #include <filesystem>

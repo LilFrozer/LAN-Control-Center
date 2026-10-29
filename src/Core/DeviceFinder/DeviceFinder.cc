@@ -1,4 +1,4 @@
-#include "DevicesFinder/DeviceFinder.h"
+#include "Core/DevicesFinder/DeviceFinder.h"
 
 // -> Конструктор класса DevicesWorker, детектит операционную систему и соответствующий интерфейс
 DevicesWorker::DevicesWorker() {
@@ -49,8 +49,8 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
         std::cout << subnet.if_name << "/" << subnet.if_addr.second << "/"
             << subnet.if_mask.second << "/" << subnet.if_flags.second << std::endl;
 
-        if (subnet.if_flags.first & IFF_LOOPBACK) {
-            // -> пропускаем 127.0.0.1(loopback-интерфейс)
+        // -> если не "en..", то скип
+        if (subnet.if_name.find("en") == std::string::npos) {
             continue;
         }
 
@@ -130,4 +130,9 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
     }
 
     return devices;
+}
+
+std::vector<Ipv4SubnetInfo> DevicesWorker::doScanSubnets() const {
+    const auto subnets{ m_system_worker->doGetAllSubnets() };
+    return subnets;
 }

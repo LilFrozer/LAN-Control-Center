@@ -1,4 +1,4 @@
-#include "DevicesFinder/SystemWorker/MacosSystemWorker.h"
+#include "Core/DevicesFinder/SystemWorker/MacosSystemWorker.h"
 
 #if defined(__APPLE__)
 
@@ -85,43 +85,43 @@ bool MacosSystemWorker::doPing( const PingMode &ping_mode, const uint32_t &if_ad
             break;
         }
         case PingMode::IcmpTerminal: {
-            in_addr addr{};
-            addr.s_addr = htonl(if_addr);
-            const std::string str_addr = inet_ntoa(addr);
-
-            uint32_t timeoutSec = (timeout_ms + 999) / 1000;  // -> округляем вверх
-            if (timeoutSec < 1) timeoutSec = 1;
-
-            std::string cmd{"ping -c 1 -W "};
-            cmd += std::to_string(timeout_ms);
-            cmd += " -t ";
-            cmd += std::to_string(timeoutSec);
-            cmd += " -q -n ";
-            cmd += str_addr;
-            cmd += " 2>&1";
-
-            std::unique_ptr<FILE, decltype(&std::fclose)> file(std::fopen(cmd.c_str(), "r"), std::fclose);
-            if (!file) {
-                logMessage("ERROR: Can`t execute cmd command!");
-                return false;
-            }
-
-            char line[512]{};
-            while (fgets(line, sizeof(line), file.get())) {
-                std::string s(line);
-                size_t pos = s.find("packets received");
-                if (pos != std::string::npos) {
-                    // -> если нашли данную подстроку
-                    size_t comma = s.rfind(',', pos);
-                    if (comma != std::string::npos) {
-                        size_t numStart = s.find_first_of("0123456789", comma);
-                        if (numStart != std::string::npos && numStart < pos) {
-                            int received = std::stoi(s.substr(numStart, pos - numStart));
-                            alive = (received > 0);
-                        }
-                    }
-                }
-            }
+            // in_addr addr{};
+            // addr.s_addr = htonl(if_addr);
+            // const std::string str_addr = inet_ntoa(addr);
+            //
+            // uint32_t timeoutSec = (timeout_ms + 999) / 1000;  // -> округляем вверх
+            // if (timeoutSec < 1) timeoutSec = 1;
+            //
+            // std::string cmd{"ping -c 1 -W "};
+            // cmd += std::to_string(timeout_ms);
+            // cmd += " -t ";
+            // cmd += std::to_string(timeoutSec);
+            // cmd += " -q -n ";
+            // cmd += str_addr;
+            // cmd += " 2>&1";
+            //
+            // std::unique_ptr<FILE, decltype(&std::fclose)> file(std::fopen(cmd.c_str(), "r"), std::fclose);
+            // if (!file) {
+            //     logMessage("ERROR: Can`t execute cmd command!");
+            //     return false;
+            // }
+            //
+            // char line[512]{};
+            // while (fgets(line, sizeof(line), file.get())) {
+            //     std::string s(line);
+            //     size_t pos = s.find("packets received");
+            //     if (pos != std::string::npos) {
+            //         // -> если нашли данную подстроку
+            //         size_t comma = s.rfind(',', pos);
+            //         if (comma != std::string::npos) {
+            //             size_t numStart = s.find_first_of("0123456789", comma);
+            //             if (numStart != std::string::npos && numStart < pos) {
+            //                 int received = std::stoi(s.substr(numStart, pos - numStart));
+            //                 alive = (received > 0);
+            //             }
+            //         }
+            //     }
+            // }
 
             break;
         }

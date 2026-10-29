@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DevicesFinder/VendorWorker/VendorWorker.h"
+#include "Core/DevicesFinder/VendorWorker/VendorWorker.h"
 
 // -> Модуль, позволяющий найти поставщика устройства в файле .csv
 class VendorWorkerCsv : public IVendorWorker, public std::enable_shared_from_this<VendorWorkerCsv> {

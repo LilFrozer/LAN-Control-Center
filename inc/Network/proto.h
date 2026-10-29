@@ -5,29 +5,33 @@
 
 namespace proto_project {
 
+enum class DataType : uint8_t {
+    PeerMulticast = 0,
+};
+
 #pragma pack(push, 1)
 struct PacketHeader {
-    uint16_t server_hash;
-    uint16_t secret_key;
-    uint32_t total_data_size;
-    uint16_t total_cnt_packets;
-    uint16_t cur_packet_number;
-    uint16_t cur_packet_size;
-    uint8_t is_first;
-    uint8_t is_last;
-    uint8_t is_compressed;
+    uint16_t hash{0x1337};
+    uint16_t secret_key{};
+    uint32_t total_data_size{};
+    uint16_t total_cnt_packets{};
+    uint16_t cur_packet_number{};
+    uint16_t cur_packet_size{};
+    uint8_t is_first{};
+    uint8_t is_last{};
+    uint8_t is_compressed{};
 };
 #pragma pack(pop)
 
 #pragma pack(push, 1)
 struct Packet {
-    PacketHeader header;
-    uint8_t data_type;
-    std::vector<char> data;
+    PacketHeader header{};
+    uint8_t data_type{};
+    std::vector<char> data{};
     static std::vector<char> doSerialize( const Packet &src ) {
         std::vector<char> buffer;
         
-        buffer.insert(buffer.end(), reinterpret_cast<const char*>(&src.header.server_hash), reinterpret_cast<const char*>(&src.header.server_hash) + 2);
+        buffer.insert(buffer.end(), reinterpret_cast<const char*>(&src.header.hash), reinterpret_cast<const char*>(&src.header.hash) + 2);
         buffer.insert(buffer.end(), reinterpret_cast<const char*>(&src.header.secret_key), reinterpret_cast<const char*>(&src.header.secret_key) + 2);
         buffer.insert(buffer.end(), reinterpret_cast<const char*>(&src.header.total_data_size), reinterpret_cast<const char*>(&src.header.total_data_size) + 4);
         buffer.insert(buffer.end(), reinterpret_cast<const char*>(&src.header.total_cnt_packets), reinterpret_cast<const char*>(&src.header.total_cnt_packets) + 2);
@@ -45,7 +49,7 @@ struct Packet {
         Packet packet;
 
         size_t offset = 0;
-        memcpy(&packet.header.server_hash, src.data() + offset, 2); 
+        memcpy(&packet.header.hash, src.data() + offset, 2);
         offset += 2;
         memcpy(&packet.header.secret_key, src.data() + offset, 2); 
         offset += 2;

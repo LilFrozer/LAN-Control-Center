@@ -22,30 +22,33 @@ file(GLOB IMGUI_SOURCES
 
 add_executable(local_scaner_prj
     src/main.cc
-    inc/Window.h
-    src/Window.cc
-    inc/asio.hpp
-    inc/MulticastBus.h
-    src/MulticastBus.cc
+    inc/UI/Window.h
+    src/UI/Window.cc
+    inc/third_party/asio.hpp
+    inc/Network/MulticastBus.h
+    src/Network/MulticastBus.cc
     ${IMGUI_SOURCES}
-    inc/proto.h
-    inc/KeyScaner.h
-    src/KeyScaner.cc
-    inc/TraficMonitor.h
-    src/TraficMonitor.cc
+    inc/Network/proto.h
 
-    inc/DevicesFinder/DeviceFinder.h
-    inc/DevicesFinder/VendorWorker/VendorWorker.h
-    src/DeviceFinder/DeviceFinder.cc
-    inc/DevicesFinder/SystemWorker/SystemWorker.h
-    inc/DevicesFinder/SystemWorker/MacosSystemWorker.h
-    src/DeviceFinder/SystemWorker/MacosSystemWorker.cc
-    inc/DevicesFinder/SystemWorker/WindowsSystemWorker.h
-    inc/DevicesFinder/SystemWorker/LinuxSystemWorker.h
-    inc/DevicesFinder/VendorWorker/VendorWorkerDatabase.h
-    inc/DevicesFinder/VendorWorker/VendorWorkerCsv.h
-    src/DeviceFinder/VendorWorker/VendorWorkerDatabase.cc
-    src/DeviceFinder/VendorWorker/VendorWorkerCsv.cc
+    inc/Core/DevicesFinder/DeviceFinder.h
+    inc/Core/DevicesFinder/VendorWorker/VendorWorker.h
+    src/Core/DeviceFinder/DeviceFinder.cc
+    inc/Core/DevicesFinder/SystemWorker/SystemWorker.h
+    inc/Core/DevicesFinder/SystemWorker/MacosSystemWorker.h
+    src/Core/DeviceFinder/SystemWorker/MacosSystemWorker.cc
+    inc/Core/DevicesFinder/SystemWorker/WindowsSystemWorker.h
+    inc/Core/DevicesFinder/SystemWorker/LinuxSystemWorker.h
+    inc/Core/DevicesFinder/VendorWorker/VendorWorkerDatabase.h
+    inc/Core/DevicesFinder/VendorWorker/VendorWorkerCsv.h
+    src/Core/DeviceFinder/VendorWorker/VendorWorkerDatabase.cc
+    src/Core/DeviceFinder/VendorWorker/VendorWorkerCsv.cc
+    inc/Core/DeviceController/DeviceController.h
+    inc/Core/DeviceController/KeyboardWorker/AbstractKeyboardWorker.h
+    inc/Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.h
+    src/Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.cc
+    inc/Network/TcpServer.h
+    inc/Network/TcpClient.h
+        src/Core/DeviceController/DeviceController.cc
 )
 
 target_include_directories(local_scaner_prj PRIVATE

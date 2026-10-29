@@ -1,4 +1,4 @@
-#include "DevicesFinder/VendorWorker/VendorWorkerDatabase.h"
+#include "Core/DevicesFinder/VendorWorker/VendorWorkerDatabase.h"
 
 VendorWorkerDatabase::~VendorWorkerDatabase() {
     if (m_data_base) {

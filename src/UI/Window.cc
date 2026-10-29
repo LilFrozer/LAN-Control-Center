@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "UI/Window.h"
 #include "imgui.h"
 
 void DeviceTable::addDevice( const DeviceInfo& device ) {
@@ -11,7 +11,7 @@ void DeviceTable::clearTable() {
     m_devices_data.clear();
 }
 
-void DeviceTable::  drawTable() const {
+void DeviceTable::  drawTable( const std::unordered_map<std::string, std::chrono::steady_clock::time_point> &detected_devices ) const {
     std::vector<DeviceInfo> devices_copy;
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -35,7 +35,11 @@ void DeviceTable::  drawTable() const {
 
             // ширина = 0 → занять всю ширину колонки (автомасштаб)
             if (ImGui::BeginChild("##card", ImVec2(0, 150), ImGuiChildFlags_AlwaysUseWindowPadding)) {
-                ImGui::TextColored(ImVec4(0.3f,0.9f,0.3f,1.0f), "Онлайн");
+                if (detected_devices.find(devices_copy[i].addr) == detected_devices.end()) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "OFFLINE");
+                } else {
+                    ImGui::TextColored(ImVec4(0.3f,0.9f,0.3f,1.0f), "ONLINE");
+                }
                 ImGui::SameLine();
                 ImGui::TextUnformatted(("-> " + devices_copy[i].addr).c_str());
 
@@ -107,43 +111,22 @@ void DeviceTable::  drawTable() const {
     }
 }
 
-
-void Window::onClipboardSlot()
-/**
- * 
- */
-{
-    std::thread([this]() {
-        std::cout << "Pressed!" << std::endl;
-        // std::cout << "Text: " << local_clipboard_service_->key_scaner->get_text() << std::endl;
-    }).detach();
-}
-
 Window::Window( asio::io_context &ctx ) :
-    // m_device_finder(std::make_unique<LocalFinderDevicesTypes>(ctx, "/Users/alekseypodoplelov/Documents/hyita01/etc/macvendor.db"))
     m_devices_table(std::make_unique<DeviceTable>())
-    // , local_clipboard_service_(std::make_shared<LocalSharedClipboard>(ctx))
-    // , local_trafic_service_(std::make_shared<LocalTraficMonitor>())
-/**
- * 
- */
-{
+    , m_device_controller(std::make_unique<DeviceController>()) {
     m_device_finder.first = std::make_unique<TimeoutDevicesWorker>(ctx);
     m_device_finder.second = std::make_unique<DevicesWorker>();
     m_device_finder.second->chooseVendorWorker(VendorMode::Database);
-    // const auto devices{ m_device_finder.second->doScan() };
-    // for (const auto &device : devices) {
-    //     std::cout << device.subnet << "/"
-    //     << device.addr << "/"
-    //     << device.hostname << "/"
-    //     << device.mac << "/"
-    //     << device.vendor << "/"
-    //     << std::endl;
-    // }
 
-    // local_clipboard_service_->key_scaner->setCallBack([this]() {
-    //     onClipboardSlot();
-    // });
+    // -> ищем адрес для сокета под мультикаст //
+    const auto subnets{ m_device_finder.second->doScanSubnets() };
+    for (const auto &subnet : subnets) {
+        if (subnet.if_name.find("en") == std::string::npos) {
+            continue;
+        }
+        m_multicast_bus = std::make_unique<MulticastBus>(ctx, subnet.if_addr.second);
+        break;
+    }
 }
 
 void Window::doLocalScanningService() {
@@ -259,7 +242,7 @@ void Window::draw()
             }
         }
         if (m_devices_table) {
-            m_devices_table->drawTable();
+            m_devices_table->drawTable(m_multicast_bus->getDetectedDevices());
         }
     }
     ImGui::EndChild();

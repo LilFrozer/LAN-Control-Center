@@ -1,4 +1,4 @@
-#include "DevicesFinder/VendorWorker/VendorWorkerCsv.h"
+#include "Core/DevicesFinder/VendorWorker/VendorWorkerCsv.h"
 
 bool VendorWorkerCsv::updateFilesFromOfficialSrc() {
 

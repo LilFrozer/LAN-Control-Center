@@ -1,17 +1,16 @@
 #pragma once 
 
-#include "DevicesFinder/DeviceFinder.h"
-#include "KeyScaner.h"
-#include "MulticastBus.h"
-#include "TraficMonitor.h"
+#include "Core/DevicesFinder/DeviceFinder.h"
+#include "Network/MulticastBus.h"
 #include <chrono>
 #include <mutex>
+#include "Core/DeviceController/DeviceController.h"
 
 class DeviceTable {
 public:
     void addDevice( const DeviceInfo& device );
     void clearTable();
-    void drawTable() const;
+    void drawTable( const std::unordered_map<std::string, std::chrono::steady_clock::time_point> &detected_devices ) const;
 private:
     std::vector<DeviceInfo> m_devices_data;
     mutable std::mutex mutex_;
@@ -52,13 +51,15 @@ private:
  * -> Основной класс окна
  */
 class Window final : public std::enable_shared_from_this<Window> {
-private:
+    // -> поиск устр-в //
     std::unique_ptr<DeviceTable> m_devices_table{ nullptr };
     std::pair<std::unique_ptr<TimeoutDevicesWorker>, std::unique_ptr<DevicesWorker>> m_device_finder{};
 
-    // std::shared_ptr<LocalSharedClipboard> local_clipboard_service_{nullptr};
-    // std::shared_ptr<LocalTraficMonitor> local_trafic_service_{nullptr};
-    void onClipboardSlot();
+    // -> управление устр-вом //
+    std::unique_ptr<DeviceController> m_device_controller{ nullptr };
+
+    // -> шина мультикаст //
+    std::unique_ptr<MulticastBus> m_multicast_bus{ nullptr };
 public:
     explicit Window( asio::io_context &ctx );
     void draw();
