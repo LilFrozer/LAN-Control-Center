@@ -1,13 +1,24 @@
 #include "Network/MulticastBus.h"
 
 MulticastBus::MulticastBus( asio::io_context &ctx, const std::string &ipv4 ) :
-    m_socket(std::make_shared<asio::ip::udp::socket>(ctx, asio::ip::udp::endpoint(asio::ip::make_address_v4(ipv4), multicast_namespace::MULTICAST_PORT)))
+    m_socket(std::make_shared<asio::ip::udp::socket>(ctx))
     , m_timer_ping(std::make_shared<asio::steady_timer>(ctx))
-    , m_timer_cleanup(std::make_shared<asio::steady_timer>(ctx)) {
-    if (m_socket) {
-        m_socket->set_option(asio::ip::udp::socket::reuse_address(true));
-        m_socket->set_option(asio::ip::multicast::join_group(asio::ip::make_address(multicast_namespace::MULTICAST_ADDR)));
-    }
+    , m_timer_cleanup(std::make_shared<asio::steady_timer>(ctx)) 
+{
+    m_socket->open(asio::ip::udp::v4());
+    m_socket->set_option(asio::ip::udp::socket::reuse_address(true));
+    m_socket->bind(
+        asio::ip::udp::endpoint(
+            asio::ip::address_v4::any(),
+            multicast_namespace::MULTICAST_PORT
+        )
+    );    
+    m_socket->set_option(
+        asio::ip::multicast::join_group(
+            asio::ip::make_address_v4(multicast_namespace::MULTICAST_ADDR),
+            asio::ip::make_address_v4(ipv4)
+        )
+    );
     doPing();
     doCleanup();
 }

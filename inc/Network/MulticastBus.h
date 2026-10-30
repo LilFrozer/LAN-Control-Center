@@ -11,7 +11,7 @@
 
 namespace multicast_namespace {
     const std::string MULTICAST_ADDR{"239.255.0.1"};
-    constexpr uint16_t MULTICAST_PORT{30000};
+    constexpr uint16_t MULTICAST_PORT{5000};
 }
 
 class MulticastBus : public std::enable_shared_from_this<MulticastBus> {
