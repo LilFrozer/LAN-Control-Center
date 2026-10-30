@@ -113,7 +113,8 @@ void DeviceTable::  drawTable( const std::unordered_map<std::string, std::chrono
 
 Window::Window( asio::io_context &ctx ) :
     m_devices_table(std::make_unique<DeviceTable>())
-    , m_device_controller(std::make_unique<DeviceController>()) {
+    , m_device_controller(std::make_unique<DeviceController>()) 
+{
     m_device_finder.first = std::make_unique<TimeoutDevicesWorker>(ctx);
     m_device_finder.second = std::make_unique<DevicesWorker>();
     m_device_finder.second->chooseVendorWorker(VendorMode::Database);
@@ -242,7 +243,7 @@ void Window::draw()
             }
         }
         if (m_devices_table) {
-            m_devices_table->drawTable(m_multicast_bus->getDetectedDevices());
+            if (m_multicast_bus) m_devices_table->drawTable(m_multicast_bus->getDetectedDevices());
         }
     }
     ImGui::EndChild();

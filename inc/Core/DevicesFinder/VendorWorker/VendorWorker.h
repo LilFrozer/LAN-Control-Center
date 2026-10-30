@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <sys/types.h>
+#include <cstdint>
 
 enum class VendorMode : uint32_t {
     Database = 0,

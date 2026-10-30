@@ -3,6 +3,7 @@
 #include <functional>
 #include <thread>
 #include <iostream>
+#include <atomic>
 
 class AbstractKeyboardWorker {
 protected:

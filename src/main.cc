@@ -1,9 +1,9 @@
-#include "../inc/UI/Window.h"
+#include "UI/Window.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
-#include "../inc/third_party/Menlo-Regular.h"
+#include "third_party/Menlo-Regular.h"
 
 void InitFonts() {
     ImGuiIO& io = ImGui::GetIO();

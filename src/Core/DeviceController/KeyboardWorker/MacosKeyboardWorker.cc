@@ -1,5 +1,7 @@
 #include "Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.h"
 
+#if defined(__APPLE__)
+
 void MacosKeyboardWorker::startScan() {
     if (m_flag_run.load()) {
         return;
@@ -81,3 +83,5 @@ CGEventRef MacosKeyboardWorker::systemScanning( CGEventTapProxy proxy, CGEventTy
 
     return event;
 }
+
+#endif

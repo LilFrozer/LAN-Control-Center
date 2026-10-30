@@ -5,7 +5,7 @@ DevicesWorker::DevicesWorker() {
 #if defined(__APPLE__)
     m_system_worker = std::make_shared<MacosSystemWorker>();
 #elif defined(WIN32)
-    // m_system_worker = std::make_shared<>();
+    m_system_worker = std::make_shared<WindowsSystemWorker>();
 #elif defined(__linux__)
     // m_system_worker = std::make_shared<>();
 #endif

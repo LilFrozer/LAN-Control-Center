@@ -48,7 +48,10 @@ add_executable(local_scaner_prj
     src/Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.cc
     inc/Network/TcpServer.h
     inc/Network/TcpClient.h
-        src/Core/DeviceController/DeviceController.cc
+    src/Core/DeviceController/DeviceController.cc
+    src/Core/DeviceFinder/SystemWorker/WindowsSystemWorker.cc
+    inc/Core/DeviceController/KeyboardWorker/WindowsKeyboardWorker.h
+    src/Core/DeviceController/KeyboardWorker/WindowsKeyboardWorker.cc
 )
 
 target_include_directories(local_scaner_prj PRIVATE
@@ -80,5 +83,11 @@ if(APPLE)
         BOOST_ASIO_USE_STD_ERIC=1
     )
 elseif(WIN32)
-    target_link_libraries(local_scaner_prj PRIVATE glfw ws2_32 gdi32 opengl32)
+if(MINGW)
+    target_link_options(local_scaner_prj PRIVATE
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
+    target_link_libraries(local_scaner_prj PRIVATE glfw ws2_32 gdi32 opengl32 SQLite::SQLite3 iphlpapi)
 endif()

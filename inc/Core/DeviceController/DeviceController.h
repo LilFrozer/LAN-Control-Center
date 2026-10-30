@@ -2,6 +2,7 @@
 
 #include "Core/DeviceController/KeyboardWorker/AbstractKeyboardWorker.h"
 #include "Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.h"
+#include "Core/DeviceController/KeyboardWorker/WindowsKeyboardWorker.h"
 
 // -> При инициализации создает внутри себя TCP-клиент для приема и отправки //
 // -> При инициализации создает внутри себя обработчик клавиатуры //
