@@ -63,10 +63,10 @@ std::vector<Ipv4SubnetInfo> MacosSystemWorker::doGetAllSubnets() const {
             char ip[INET6_ADDRSTRLEN] = {};
             const auto* sin6 = reinterpret_cast<sockaddr_in6*>(ifa->ifa_addr);
             inet_ntop(AF_INET6, &sin6->sin6_addr, ip, sizeof(ip));
-            std::cout << name << "  ip6=" << ip << std::endl;;
+            // std::cout << name << "  ip6=" << ip << std::endl;
         } else {
             //
-            std::cout << "..." << std::endl;
+            // std::cout << "..." << std::endl;
         }
     }
 

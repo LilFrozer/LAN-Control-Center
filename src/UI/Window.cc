@@ -11,7 +11,7 @@ void DeviceTable::clearTable() {
     m_devices_data.clear();
 }
 
-void DeviceTable::  drawTable( const std::unordered_map<std::string, std::chrono::steady_clock::time_point> &detected_devices ) const {
+void DeviceTable::drawTable( const std::unordered_map<std::string, std::chrono::steady_clock::time_point> &detected_devices ) const {
     std::vector<DeviceInfo> devices_copy;
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -125,9 +125,14 @@ Window::Window( asio::io_context &ctx ) :
         if (subnet.if_name.find("en") == std::string::npos) {
             continue;
         }
-        m_multicast_bus = std::make_unique<MulticastBus>(ctx, subnet.if_addr.second);
+        m_multicast_bus = std::make_shared<MulticastBus>(ctx, subnet.if_addr.second);
+        m_multicast_bus->startListen();
         break;
     }
+}
+
+Window::~Window() {
+    if (m_multicast_bus) m_multicast_bus->stopListen();
 }
 
 void Window::doLocalScanningService() {

@@ -46,8 +46,8 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
     // -> 1. находим все подсети текущего устр-ва
     const auto subnets{ m_system_worker->doGetAllSubnets() };
     for (const auto &subnet : subnets) {
-        std::cout << subnet.if_name << "/" << subnet.if_addr.second << "/"
-            << subnet.if_mask.second << "/" << subnet.if_flags.second << std::endl;
+        // std::cout << subnet.if_name << "/" << subnet.if_addr.second << "/"
+        //     << subnet.if_mask.second << "/" << subnet.if_flags.second << std::endl;
 
         // -> если не "en..", то скип
         if (subnet.if_name.find("en") == std::string::npos) {

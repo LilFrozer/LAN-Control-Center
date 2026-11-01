@@ -59,9 +59,10 @@ class Window final : public std::enable_shared_from_this<Window> {
     std::unique_ptr<DeviceController> m_device_controller{ nullptr };
 
     // -> шина мультикаст //
-    std::unique_ptr<MulticastBus> m_multicast_bus{ nullptr };
+    std::shared_ptr<MulticastBus> m_multicast_bus{ nullptr };
 public:
     explicit Window( asio::io_context &ctx );
+    ~Window();
     void draw();
     void doLocalScanningService();
     void doLocalClipboardService();

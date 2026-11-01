@@ -9,7 +9,7 @@ MulticastBus::MulticastBus( asio::io_context &ctx, const std::string &ipv4 ) :
     m_socket->set_option(asio::ip::udp::socket::reuse_address(true));
     m_socket->bind(
         asio::ip::udp::endpoint(
-            asio::ip::address_v4::any(),
+            asio::ip::make_address_v4(ipv4),
             multicast_namespace::MULTICAST_PORT
         )
     );    
@@ -19,6 +19,8 @@ MulticastBus::MulticastBus( asio::io_context &ctx, const std::string &ipv4 ) :
             asio::ip::make_address_v4(ipv4)
         )
     );
+    m_socket->set_option(asio::ip::multicast::outbound_interface(asio::ip::make_address_v4(ipv4)));
+    std::cout << "LOG: IPV4 MULTICAST -> " << ipv4 << std::endl;
     doPing();
     doCleanup();
 }
@@ -49,7 +51,7 @@ void MulticastBus::doCleanup() {
             for (auto it = m_detected_devices.begin(); it != m_detected_devices.end(); ) {
                 const auto diff{ std::chrono::duration_cast<std::chrono::seconds>(now - it->second).count() };
                 if (diff > 5) {
-                    std::cout << "Device removed (timeout): " << it->first << std::endl;
+                    std::cout << "LOG: DEVICE REMOVED, CUZ TIMEOUT: " << it->first << std::endl;
                     it = m_detected_devices.erase(it);
                 } else {
                     ++it;
@@ -102,7 +104,10 @@ void MulticastBus::doReceive() {
         if (!ec) {
             const std::vector<char> data(m_rcv_buf.data(), m_rcv_buf.data() + bytes_transferred);
             const std::string sender_ipv4{ m_send_endpoint.address().to_string() };
-            handlePacket(data, sender_ipv4);
+            std::cout << "LOG: SENDER -> " << sender_ipv4 << " . CURRENT DEVICE -> " << m_socket->local_endpoint().address().to_string() << std::endl;
+            if (sender_ipv4 != m_socket->local_endpoint().address().to_string()) {
+                handlePacket(data, sender_ipv4);
+            }
             self->doReceive();
         } else {
             std::cerr << "ERROR: mc_rcv -> " << ec.message() << std::endl;
