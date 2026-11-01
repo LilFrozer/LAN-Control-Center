@@ -16,6 +16,7 @@ namespace multicast_namespace {
 
 class MulticastBus : public std::enable_shared_from_this<MulticastBus> {
     std::shared_ptr<asio::ip::udp::socket> m_socket{ nullptr };
+    std::string m_current_ipv4{};
     asio::ip::udp::endpoint m_send_endpoint{};
     std::array<char, 1472> m_rcv_buf{};
     void doReceive();

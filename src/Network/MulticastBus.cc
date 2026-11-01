@@ -3,24 +3,25 @@
 MulticastBus::MulticastBus( asio::io_context &ctx, const std::string &ipv4 ) :
     m_socket(std::make_shared<asio::ip::udp::socket>(ctx))
     , m_timer_ping(std::make_shared<asio::steady_timer>(ctx))
-    , m_timer_cleanup(std::make_shared<asio::steady_timer>(ctx)) 
+    , m_timer_cleanup(std::make_shared<asio::steady_timer>(ctx))
+    , m_current_ipv4(ipv4)
 {
     m_socket->open(asio::ip::udp::v4());
     m_socket->set_option(asio::ip::udp::socket::reuse_address(true));
     m_socket->bind(
         asio::ip::udp::endpoint(
-            asio::ip::make_address_v4(ipv4),
+            asio::ip::address_v4::any(),
             multicast_namespace::MULTICAST_PORT
         )
     );    
     m_socket->set_option(
         asio::ip::multicast::join_group(
             asio::ip::make_address_v4(multicast_namespace::MULTICAST_ADDR),
-            asio::ip::make_address_v4(ipv4)
+            asio::ip::make_address_v4(m_current_ipv4)
         )
     );
-    m_socket->set_option(asio::ip::multicast::outbound_interface(asio::ip::make_address_v4(ipv4)));
-    std::cout << "LOG: IPV4 MULTICAST -> " << ipv4 << std::endl;
+    m_socket->set_option(asio::ip::multicast::outbound_interface(asio::ip::make_address_v4(m_current_ipv4)));
+    std::cout << "LOG: IPV4 MULTICAST -> " << m_current_ipv4 << std::endl;
     doPing();
     doCleanup();
 }
@@ -104,8 +105,8 @@ void MulticastBus::doReceive() {
         if (!ec) {
             const std::vector<char> data(m_rcv_buf.data(), m_rcv_buf.data() + bytes_transferred);
             const std::string sender_ipv4{ m_send_endpoint.address().to_string() };
-            std::cout << "LOG: SENDER -> " << sender_ipv4 << " . CURRENT DEVICE -> " << m_socket->local_endpoint().address().to_string() << std::endl;
-            if (sender_ipv4 != m_socket->local_endpoint().address().to_string()) {
+            std::cout << "LOG: SENDER -> " << sender_ipv4 << " . CURRENT DEVICE -> " << m_current_ipv4 << std::endl;
+            if (sender_ipv4 != m_current_ipv4) {
                 handlePacket(data, sender_ipv4);
             }
             self->doReceive();
