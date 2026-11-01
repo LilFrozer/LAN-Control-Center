@@ -14,7 +14,7 @@ namespace multicast_namespace {
     constexpr uint16_t MULTICAST_PORT{5000};
 }
 
-class MulticastBus : public std::enable_shared_from_this<MulticastBus> {
+class MCWorker : public std::enable_shared_from_this<MCWorker> {
     std::shared_ptr<asio::ip::udp::socket> m_socket{ nullptr };
     std::string m_current_ipv4{};
     asio::ip::udp::endpoint m_send_endpoint{};
@@ -29,8 +29,8 @@ class MulticastBus : public std::enable_shared_from_this<MulticastBus> {
     std::shared_ptr<asio::steady_timer> m_timer_cleanup{ nullptr };
     void doCleanup();
 public:
-    explicit MulticastBus( asio::io_context &ctx, const std::string &ipv4 );
-    ~MulticastBus();
+    explicit MCWorker( asio::io_context &ctx, const std::string &ipv4 );
+    ~MCWorker();
     void startListen();
     void stopListen() const;
     void doSend( const proto_project::Packet &packet ) const;

@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "Core/DevicesFinder/DeviceFinder.h"
-#include "Network/MulticastBus.h"
+#include "Network/MCWorker.h"
 #include <chrono>
 #include <mutex>
 #include "Core/DeviceController/DeviceController.h"
@@ -59,7 +59,7 @@ class Window final : public std::enable_shared_from_this<Window> {
     std::unique_ptr<DeviceController> m_device_controller{ nullptr };
 
     // -> шина мультикаст //
-    std::shared_ptr<MulticastBus> m_multicast_bus{ nullptr };
+    std::shared_ptr<MCWorker> m_mc_worker{ nullptr };
 public:
     explicit Window( asio::io_context &ctx );
     ~Window();

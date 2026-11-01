@@ -25,8 +25,8 @@ add_executable(local_scaner_prj
     inc/UI/Window.h
     src/UI/Window.cc
     inc/third_party/asio.hpp
-    inc/Network/MulticastBus.h
-    src/Network/MulticastBus.cc
+        inc/Network/MCWorker.h
+        src/Network/MCWorker.cc
     ${IMGUI_SOURCES}
     inc/Network/proto.h
 

@@ -125,14 +125,14 @@ Window::Window( asio::io_context &ctx ) :
         if (subnet.if_name.find("en") == std::string::npos) {
             continue;
         }
-        m_multicast_bus = std::make_shared<MulticastBus>(ctx, subnet.if_addr.second);
-        m_multicast_bus->startListen();
+        m_mc_worker = std::make_shared<MCWorker>(ctx, subnet.if_addr.second);
+        m_mc_worker->startListen();
         break;
     }
 }
 
 Window::~Window() {
-    if (m_multicast_bus) m_multicast_bus->stopListen();
+    if (m_mc_worker) m_mc_worker->stopListen();
 }
 
 void Window::doLocalScanningService() {
@@ -237,7 +237,7 @@ void Window::draw()
     ImGui::Spacing();
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.6f, 1.0f, 1.0f));
-    if (ImGui::BeginChild("##device_map", ImVec2(0, 260), ImGuiChildFlags_Borders)) {
+    if (ImGui::BeginChild("##device_map", ImVec2(0, 420), ImGuiChildFlags_Borders)) {
         const auto &timer_object{ m_device_finder.first };
         if (ImGui::Button(timer_object->is_active ? "Остановить поиск!" : "Начать поиск!", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
             if (timer_object->is_active) {
@@ -248,7 +248,7 @@ void Window::draw()
             }
         }
         if (m_devices_table) {
-            if (m_multicast_bus) m_devices_table->drawTable(m_multicast_bus->getDetectedDevices());
+            if (m_mc_worker) m_devices_table->drawTable(m_mc_worker->getDetectedDevices());
         }
     }
     ImGui::EndChild();
