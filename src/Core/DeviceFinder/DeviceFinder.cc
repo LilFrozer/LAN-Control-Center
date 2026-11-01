@@ -103,10 +103,7 @@ std::vector<DeviceInfo> DevicesWorker::doScan( uint32_t timeout_ms ) const {
                         device.addr = ipv4;
 
                         // -> определяем какое сетевое устр-во обнаружило это устр-во
-                        device.subnet = subnet.if_name + "/" +
-                                        subnet.if_addr.second + "/" +
-                                        subnet.if_mask.second + "/" +
-                                        subnet.if_flags.second;
+                        device.subnet = subnet.if_name;
 
                         {
                             std::lock_guard<std::mutex> lock(devices_mutex);

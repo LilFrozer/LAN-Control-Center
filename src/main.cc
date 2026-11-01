@@ -97,6 +97,7 @@ int main( int argc, char* argv[] )
             glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            ImGui::StyleColorsClassic();
 
             glfwSwapBuffers(window);
         }
