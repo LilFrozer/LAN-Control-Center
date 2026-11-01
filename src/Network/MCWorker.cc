@@ -54,18 +54,10 @@ void MCWorker::doCleanup() {
 }
 
 MCWorker::~MCWorker() {
-    if (m_socket) {
-        stopListen();
-    }
+    close();
 }
 
-void MCWorker::startListen() {
-    if (m_socket) {
-        doReceive();
-    }
-}
-
-void MCWorker::stopListen() const {
+void MCWorker::close() const {
     if (m_socket) {
         asio::error_code ec{};
         m_socket->close(ec);
@@ -89,9 +81,9 @@ void MCWorker::handlePacket( const std::vector<char> &src, const std::string &ip
     }
 }
 
-void MCWorker::doReceive() {
-    auto self = shared_from_this();
-    m_socket->async_receive_from(asio::buffer(m_rcv_buf), m_send_endpoint, [this, self](asio::error_code ec, std::size_t bytes_transferred) {
+void MCWorker::listen() {
+    auto p_this = shared_from_this();
+    m_socket->async_receive_from(asio::buffer(m_rcv_buf), m_send_endpoint, [this, p_this](asio::error_code ec, std::size_t bytes_transferred) {
         if (!ec) {
             const std::vector<char> data(m_rcv_buf.data(), m_rcv_buf.data() + bytes_transferred);
             const std::string sender_ipv4{ m_send_endpoint.address().to_string() };
@@ -99,7 +91,7 @@ void MCWorker::doReceive() {
             if (sender_ipv4 != m_current_ipv4) {
                 handlePacket(data, sender_ipv4);
             }
-            self->doReceive();
+            p_this->listen();
         } else {
             std::cerr << "ERROR: mc_rcv -> " << ec.message() << std::endl;
         }

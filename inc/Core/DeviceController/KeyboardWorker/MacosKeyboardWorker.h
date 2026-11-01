@@ -2,6 +2,8 @@
 
 #include "AbstractKeyboardWorker.h"
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 #if defined(__APPLE__)
 
@@ -16,6 +18,9 @@ public:
     void startScan() override;
     void stopScan() override;
     static CGEventRef systemScanning( CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *ref );
+    static std::string keyCodeToString( const CGKeyCode &code );
+    static std::string flagsToString( const CGEventFlags &flags );
+    std::function<void( const KeyCombo &combo )> signalKeyPressed;
 };
 
 #endif

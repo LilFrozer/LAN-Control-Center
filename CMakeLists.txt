@@ -46,12 +46,18 @@ add_executable(local_scaner_prj
     inc/Core/DeviceController/KeyboardWorker/AbstractKeyboardWorker.h
     inc/Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.h
     src/Core/DeviceController/KeyboardWorker/MacosKeyboardWorker.cc
-    inc/Network/TcpServer.h
-    inc/Network/TcpClient.h
+        inc/Network/Acceptor/TcpServer.h
+        inc/Network/Sender/TcpClient.h
     src/Core/DeviceController/DeviceController.cc
     src/Core/DeviceFinder/SystemWorker/WindowsSystemWorker.cc
     inc/Core/DeviceController/KeyboardWorker/WindowsKeyboardWorker.h
     src/Core/DeviceController/KeyboardWorker/WindowsKeyboardWorker.cc
+        src/Network/Acceptor/TcpServer.cc
+        src/Network/Acceptor/TcpSession.cc
+        src/Network/Sender/TcpClient.cc
+        src/Network/Sender/TcpClientManager.cc
+        inc/Network/Acceptor/TcpSession.h
+        inc/Network/Sender/TcpClientManager.h
 )
 
 target_include_directories(local_scaner_prj PRIVATE

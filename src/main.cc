@@ -30,8 +30,7 @@ void InitFonts() {
     }
 }
 
-int main( int argc, char* argv[] ) 
-{
+int main( int argc, char* argv[] )  {
     try {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -88,7 +87,7 @@ int main( int argc, char* argv[] )
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            app.draw();
+            app.drawMainWindow();
 
             ImGui::Render();
             int display_w, display_h;

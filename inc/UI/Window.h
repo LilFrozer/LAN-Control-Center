@@ -5,33 +5,31 @@
 #include <chrono>
 #include <mutex>
 #include "Core/DeviceController/DeviceController.h"
-
-class DeviceTable {
-public:
-    void addDevice( const DeviceInfo& device );
-    void clearTable();
-    void drawTable( const std::unordered_map<std::string, std::chrono::steady_clock::time_point> &detected_devices ) const;
-private:
-    std::vector<DeviceInfo> m_devices_data;
-    mutable std::mutex mutex_;
-};
+#include "Network/Acceptor/TcpServer.h"
+#include "Network/Sender/TcpClientManager.h"
+#include "Network/proto.h"
 
 // -> окно //
 class Window final : public std::enable_shared_from_this<Window> {
     // -> поиск устр-в //
-    std::unique_ptr<DeviceTable> m_devices_table{ nullptr };
-    std::pair<std::unique_ptr<TimeoutDevicesWorker>, std::unique_ptr<DevicesWorker>> m_device_finder{};
+    std::shared_ptr<TimeoutDevicesWorker> m_timer_dvf{ nullptr };
+    std::shared_ptr<DevicesWorker> m_worker_dvf{ nullptr };
+    std::vector<DeviceInfo> m_found_dvf{};
 
     // -> управление устр-вом //
-    std::unique_ptr<DeviceController> m_device_controller{ nullptr };
+    std::shared_ptr<DeviceController> m_current_device_ctrl{ nullptr };
 
     // -> мультикаст //
     std::shared_ptr<MCWorker> m_mc_worker{ nullptr };
+
+    // -> сервер для подключения + менеджер подключений //
+    std::shared_ptr<TcpServer> m_tcp_server{ nullptr };
+    std::shared_ptr<TcpClientManager> m_client_manager{ nullptr };
+    asio::io_context *m_ctx{ nullptr };
 public:
     explicit Window( asio::io_context &ctx );
     ~Window();
-    void draw();
+    void drawMainWindow();
+    void drawDeviceTable();
     void doLocalScanningService();
-    void doLocalClipboardService();
-    void doTraficMonitorService();
 };

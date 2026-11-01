@@ -3,10 +3,15 @@
 #include <cstdint>
 #include <vector>
 
+namespace tcp_const {
+    constexpr uint16_t KB_PORT = 8000;    // -> порт для управления клавиатурой //
+}
+
 namespace proto_project {
 
 enum class DataType : uint8_t {
     PeerMulticast = 0,
+    KeyCombo = 1
 };
 
 #pragma pack(push, 1)

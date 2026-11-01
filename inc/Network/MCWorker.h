@@ -19,7 +19,6 @@ class MCWorker : public std::enable_shared_from_this<MCWorker> {
     std::string m_current_ipv4{};
     asio::ip::udp::endpoint m_send_endpoint{};
     std::array<char, 1472> m_rcv_buf{};
-    void doReceive();
     void handlePacket( const std::vector<char> &src, const std::string &ipv4 );
 
     std::shared_ptr<asio::steady_timer> m_timer_ping{ nullptr };
@@ -31,8 +30,8 @@ class MCWorker : public std::enable_shared_from_this<MCWorker> {
 public:
     explicit MCWorker( asio::io_context &ctx, const std::string &ipv4 );
     ~MCWorker();
-    void startListen();
-    void stopListen() const;
+    void listen();
+    void close() const;
     void doSend( const proto_project::Packet &packet ) const;
     std::unordered_map<std::string, std::chrono::steady_clock::time_point> getDetectedDevices() const;
 };
