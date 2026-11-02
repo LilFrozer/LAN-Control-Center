@@ -21,6 +21,7 @@ public:
     static std::string keyCodeToString( const CGKeyCode &code );
     static std::string flagsToString( const CGEventFlags &flags );
     std::function<void( const KeyCombo &combo )> signalKeyPressed;
+    void slotKeyPressed(const KeyCombo &c) override;
 };
 
 #endif

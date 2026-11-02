@@ -62,31 +62,15 @@ CGEventRef MacosKeyboardWorker::systemScanning( CGEventTapProxy proxy, CGEventTy
         return event;
     }
 
-    static std::vector<CGKeyCode> buffer{};
-    static std::chrono::steady_clock::time_point last_event{};
-    static constexpr auto PAUSE_MS = std::chrono::milliseconds(50);
-
     if (type == kCGEventKeyDown) {
         // -> Что нажали, код клавиши + модификатор //
         CGKeyCode key_code{ static_cast<CGKeyCode>(CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode)) };
         const CGEventFlags flags{ CGEventGetFlags(event) };
 
-        const auto now = std::chrono::steady_clock::now();
-
-        if (!buffer.empty() && (now - last_event) >= PAUSE_MS) {
-            KeyCombo combo{};
-            combo.keys.reserve(buffer.size());
-            for (const auto &key : buffer) {
-                combo.keys.push_back(keyCodeToString(key));
-            }
-            combo.modifier = flagsToString(flags);
-            // p_this->signalKeyPressed(combo);
-
-            buffer.clear();
-        }
-
-        buffer.push_back(key_code);
-        last_event = now;
+        KeyCombo combo{};
+        combo.keys.push_back(keyCodeToString(key_code));
+        combo.modifier = flagsToString(flags);
+        p_this->signalKeyPressed(combo);
     }
 
     if (p_this->m_block_input.load()) {
@@ -145,10 +129,14 @@ std::string MacosKeyboardWorker::flagsToString( const CGEventFlags &flags ) {
     if (flags & kCGEventFlagMaskShift)     add("Shift");
     if (flags & kCGEventFlagMaskControl)   add("Ctrl");
     if (flags & kCGEventFlagMaskAlternate) add("Option");
-    if (flags & kCGEventFlagMaskAlphaShift)add("CapsLock");
+    if (flags & kCGEventFlagMaskAlphaShift) add("CapsLock");
 
     if (out.empty()) out = "none";
     return out;
+}
+
+void MacosKeyboardWorker::slotKeyPressed(const KeyCombo &c) {
+
 }
 
 #endif
