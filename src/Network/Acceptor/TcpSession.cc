@@ -35,7 +35,7 @@ void TcpSession::handlePacket() {
     proto_project::Packet packet = proto_project::Packet::doDeserialise(m_rcv_buffer);
     switch (static_cast<proto_project::DataType>(packet.data_type)) {
         case proto_project::DataType::KeyCombo: {
-            std::cout << "KEYCOMBO!" << std::endl;
+            rcvKeyCombo(KeyCombo::doDeserialize(packet.data));
             break;
         }
         default: {

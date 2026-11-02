@@ -95,4 +95,99 @@ void WindowsKeyboardWorker::stopScan() {
     }
 }
 
+// Вспомогательная функция: преобразование строки в виртуальный код клавиши Windows
+WORD WindowsKeyboardWorker::stringToVk(const std::string& s) {
+    if (s.empty()) return 0;
+    
+    // Одиночные символы (буквы и цифры)
+    if (s.size() == 1) {
+        char c = s[0];
+        if (c >= 'a' && c <= 'z') return static_cast<WORD>(std::toupper(c));
+        if (c >= 'A' && c <= 'Z') return static_cast<WORD>(c);
+        if (c >= '0' && c <= '9') return static_cast<WORD>(c);
+    }
+    
+    // Функциональные клавиши F1 - F12
+    if (s.size() >= 2 && s[0] == 'F' && s[1] >= '1' && s[1] <= '9') {
+        int num = std::stoi(s.substr(1));
+        if (num >= 1 && num <= 12) return VK_F1 + (num - 1);
+    }
+    
+    // Модификаторы и специальные клавиши (без учета регистра)
+    std::string lower = s;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    
+    if (lower == "shift") return VK_SHIFT;
+    if (lower == "ctrl" || lower == "control") return VK_CONTROL;
+    if (lower == "alt" || lower == "option") return VK_MENU;
+    if (lower == "cmd" || lower == "win" || lower == "command") return VK_LWIN;
+    if (lower == "enter" || lower == "return") return VK_RETURN;
+    if (lower == "tab") return VK_TAB;
+    if (lower == "space") return VK_SPACE;
+    if (lower == "esc" || lower == "escape") return VK_ESCAPE;
+    if (lower == "backspace") return VK_BACK;
+    if (lower == "delete" || lower == "del") return VK_DELETE;
+    if (lower == "up") return VK_UP;
+    if (lower == "down") return VK_DOWN;
+    if (lower == "left") return VK_LEFT;
+    if (lower == "right") return VK_RIGHT;
+    
+    return 0; // Неизвестная клавиша
+}
+
+void WindowsKeyboardWorker::slotKeyPressed(const KeyCombo &c) {
+    std::vector<INPUT> inputs;
+    
+    // 1. Нажать модификаторы (например, Shift, Ctrl)
+    WORD modVk = 0;
+    if (!c.modifier.empty()) {
+        // modifier может быть строкой, содержащей несколько модификаторов, соединенных знаком "+", например "Shift+Cmd"
+        // Здесь обрабатывается только первый модификатор; для нескольких модификаторов требуется логика разделения
+        modVk = stringToVk(c.modifier);
+        if (modVk != 0) {
+            INPUT in = {};
+            in.type = INPUT_KEYBOARD;
+            in.ki.wVk = modVk;
+            inputs.push_back(in);
+        }
+    }
+    
+    // 2. Нажать основные клавиши (по порядку)
+    for (const auto& keyStr : c.keys) {
+        WORD vk = stringToVk(keyStr);
+        if (vk == 0) continue;
+        
+        INPUT down = {};
+        down.type = INPUT_KEYBOARD;
+        down.ki.wVk = vk;
+        inputs.push_back(down);
+    }
+    
+    // 3. Отпустить основные клавиши (в обратном порядке)
+    for (auto it = c.keys.rbegin(); it != c.keys.rend(); ++it) {
+        WORD vk = stringToVk(*it);
+        if (vk == 0) continue;
+        
+        INPUT up = {};
+        up.type = INPUT_KEYBOARD;
+        up.ki.wVk = vk;
+        up.ki.dwFlags = KEYEVENTF_KEYUP;
+        inputs.push_back(up);
+    }
+    
+    // 4. Отпустить модификаторы
+    if (modVk != 0) {
+        INPUT up = {};
+        up.type = INPUT_KEYBOARD;
+        up.ki.wVk = modVk;
+        up.ki.dwFlags = KEYEVENTF_KEYUP;
+        inputs.push_back(up);
+    }
+    
+    // 5. Отправить все события
+    if (!inputs.empty()) {
+        SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
+    }
+}
+
 #endif // _WIN32

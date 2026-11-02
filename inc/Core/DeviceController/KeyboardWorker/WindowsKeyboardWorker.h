@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <atomic>
 #include <thread>
+#include <algorithm>
 
 class WindowsKeyboardWorker : public AbstractKeyboardWorker, public std::enable_shared_from_this<WindowsKeyboardWorker> {
 public:
@@ -17,6 +18,7 @@ public:
     }
     void startScan() override;
     void stopScan() override;
+    void slotKeyPressed( const KeyCombo &c ) override;
 private:
      // -> Флаг работы (аналог m_flag_run в macOS)
     std::atomic<bool> m_flag_run{false};
@@ -31,6 +33,8 @@ private:
     //    Является статическим методом класса (как systemScanning в macOS),
     //    поэтому имеет доступ к private-полям без friend-объявлений.
     static LRESULT CALLBACK systemScanning(int nCode, WPARAM wParam, LPARAM lParam);
+
+    WORD stringToVk(const std::string& s);
 };
 
 #endif

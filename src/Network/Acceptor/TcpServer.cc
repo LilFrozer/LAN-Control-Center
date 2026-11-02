@@ -20,7 +20,10 @@ void TcpServer::listen() {
             if (!ec) {
                 const auto who_is { socket.remote_endpoint(ec) };
                 if (!ec) {
-                    auto session{std::make_shared<TcpSession>(socket)};
+                    const auto session{std::make_shared<TcpSession>(socket)};
+                    session->rcvKeyCombo = [p_this]( const KeyCombo &c ) {
+                        p_this->rcvKeyCombo(c);
+                    };
                     session->doRead();
                 }
             }

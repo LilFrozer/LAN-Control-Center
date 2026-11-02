@@ -22,3 +22,7 @@ DeviceController::~DeviceController() {
 void DeviceController::setActiveBlockKeyboard( const bool &f ) const {
     m_kb_worker->setBlockInput(f);
 }
+
+void DeviceController::slotKeyPressed( const KeyCombo &combo ) {
+    m_kb_worker->slotKeyPressed(combo);
+}

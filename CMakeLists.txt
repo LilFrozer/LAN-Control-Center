@@ -95,5 +95,5 @@ if(MINGW)
         -static-libstdc++
     )
 endif()
-    target_link_libraries(local_scaner_prj PRIVATE glfw ws2_32 gdi32 opengl32 SQLite::SQLite3 iphlpapi)
+    target_link_libraries(local_scaner_prj PRIVATE glfw ws2_32 gdi32 opengl32 SQLite::SQLite3 iphlpapi mswsock)
 endif()

@@ -29,6 +29,10 @@ Window::Window( asio::io_context &ctx ) :
         packet.data = KeyCombo::doSerialize(c);
         m_client_manager->doSend(packet);
     };
+
+    m_tcp_server->rcvKeyCombo = [this]( const KeyCombo& c ) {
+        m_current_device_ctrl->slotKeyPressed(c);
+    };
 }
 
 Window::~Window() {
