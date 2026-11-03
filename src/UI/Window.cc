@@ -182,8 +182,6 @@ void Window::drawDeviceTable() {
             ImGui::TextUnformatted(m_found_dvf[i].subnet.c_str());
             ImGui::SameLine();
             ImGui::TextUnformatted(("-> " + m_found_dvf[i].addr).c_str());
-            ImGui::SameLine();
-            ImGui::TextUnformatted(("-> " + m_found_dvf[i].mac).c_str());
             ImGui::PopStyleColor();
 
             // --- стилизация карточки ---
@@ -193,23 +191,35 @@ void Window::drawDeviceTable() {
 
             // ширина = 0 → занять всю ширину колонки (автомасштаб)
             if (ImGui::BeginChild("##card", ImVec2(0, 150), ImGuiChildFlags_AlwaysUseWindowPadding)) {
-                ImGui::TextUnformatted("НАЗВАНИЕ ->");
+                ImGui::TextUnformatted("Mac ->");
                 ImGui::SameLine();
-                ImGui::TextUnformatted(m_found_dvf[i].hostname.c_str());
+                ImGui::TextUnformatted(m_found_dvf[i].mac.c_str());
 
-                ImGui::TextUnformatted("ВЕНДОР ->");
+                ImGui::TextUnformatted("Vendor ->");
                 ImGui::SameLine();
                 ImGui::TextUnformatted(m_found_dvf[i].vendor.c_str());
 
                 ImGui::Separator();
 
-                // -> Кнопки
-                // if (ImGui::Button("МЕТРИКИ", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                //
-                // }
-                if (ImGui::Button("КЛАВИАТУРА", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                    m_client_manager->addConnect(*m_ctx, m_found_dvf[i].addr, tcp_const::KB_PORT);
+                // -> Кнопки //
+                if (ImGui::Button("Курсор", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+
                 }
+                if (m_client_manager->isClientConnected(m_found_dvf[i].addr)) {
+                    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.15f, 0.65f, 0.30f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.75f, 0.35f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f, 0.55f, 0.25f, 1.0f));
+                } else {
+                    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.75f, 0.20f, 0.20f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.28f, 0.28f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65f, 0.15f, 0.15f, 1.0f));
+                }
+                if (ImGui::Button("Клавиатура", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    (m_client_manager->isClientConnected(m_found_dvf[i].addr)) ?
+                        m_client_manager->removeConnect(m_found_dvf[i].addr) :
+                        m_client_manager->addConnect(*m_ctx, m_found_dvf[i].addr, tcp_const::KB_PORT);
+                }
+                ImGui::PopStyleColor(3);
                 // ImGui::SameLine();
                 // if (ImGui::Button("", ImVec2(btn_w, 0)))     { /* ... */ }
                 // ImGui::SameLine();
