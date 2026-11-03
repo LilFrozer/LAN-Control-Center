@@ -18,13 +18,13 @@ TcpClient::~TcpClient() {
 void TcpClient::doRead() {
     const auto p_this = shared_from_this();
     asio::async_read(m_socket, asio::buffer(&m_rcv_size, sizeof(uint32_t)), [this, p_this]( asio::error_code ec, size_t ) {
-        if (ec == asio::error::eof) {
+        if (ec == asio::error::eof || ec == asio::error::operation_aborted) {
             doDisconnect(m_current_client_id);
             return;
         }
         m_rcv_buffer.resize(m_rcv_size);
         asio::async_read(m_socket, asio::buffer(m_rcv_buffer), [this, p_this]( asio::error_code ec, size_t ) {
-            if (ec == asio::error::eof) {
+            if (ec == asio::error::eof || ec == asio::error::operation_aborted) {
                 doDisconnect(m_current_client_id);
                 return;
             }
@@ -43,10 +43,10 @@ void TcpClient::doConnect( const std::string &ipv4, const uint16_t &port ) {
         asio::async_connect(m_socket, endpoints, [this]( asio::error_code ec, asio::ip::tcp::endpoint ) {
             if (ec) {
                 doDisconnect(m_current_client_id);
-            } else {
-                std::cout << "Connected to server!" << std::endl;
-                doRead();
+                return;
             }
+            std::cout << "Connected to server!" << std::endl;
+            doRead();
          });
     });
 }
