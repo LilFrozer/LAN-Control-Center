@@ -152,28 +152,23 @@ void WindowsKeyboardWorker::rcvKeyCombo( const KeyCombo &c ) {
         }
     }
     
-    // 2. Нажать основные клавиши (по порядку)
-    for (const auto& keyStr : c.keys) {
-        WORD vk = stringToVk(keyStr);
-        if (vk == 0) continue;
-        
-        INPUT down = {};
-        down.type = INPUT_KEYBOARD;
-        down.ki.wVk = vk;
-        inputs.push_back(down);
-    }
+    // 2. Нажать основные клавиши
+    WORD vk = stringToVk(c.key);
+
+    INPUT down = {};
+    down.type = INPUT_KEYBOARD;
+    down.ki.wVk = vk;
+    inputs.push_back(down);
+
     
-    // 3. Отпустить основные клавиши (в обратном порядке)
-    for (auto it = c.keys.rbegin(); it != c.keys.rend(); ++it) {
-        WORD vk = stringToVk(*it);
-        if (vk == 0) continue;
-        
-        INPUT up = {};
-        up.type = INPUT_KEYBOARD;
-        up.ki.wVk = vk;
-        up.ki.dwFlags = KEYEVENTF_KEYUP;
-        inputs.push_back(up);
-    }
+    // 3. Отпустить основные клавиши
+    vk = stringToVk(c.key);
+
+    INPUT up = {};
+    up.type = INPUT_KEYBOARD;
+    up.ki.wVk = vk;
+    up.ki.dwFlags = KEYEVENTF_KEYUP;
+    inputs.push_back(up);
     
     // 4. Отпустить модификаторы
     if (modVk != 0) {
