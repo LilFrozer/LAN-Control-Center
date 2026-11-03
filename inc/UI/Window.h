@@ -24,7 +24,8 @@ class Window final : public std::enable_shared_from_this<Window> {
 
     // -> сервер для подключения + менеджер подключений //
     std::shared_ptr<TcpServer> m_tcp_server{ nullptr };
-    std::shared_ptr<TcpClientManager> m_client_manager{ nullptr };
+    std::shared_ptr<TcpClientManager> m_client_cursor_manager{ nullptr };
+    std::shared_ptr<TcpClientManager> m_client_keyboard_manager{ nullptr };
     asio::io_context *m_ctx{ nullptr };
 public:
     explicit Window( asio::io_context &ctx );

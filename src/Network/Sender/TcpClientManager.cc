@@ -1,10 +1,14 @@
 #include "Network/Sender/TcpClientManager.h"
 
-void TcpClientManager::addConnect( asio::io_context &ctx, const std::string &ipv4, const uint16_t &port ) {
+TcpClientManager::TcpClientManager( const uint16_t &port ) : m_port(port) {
+
+}
+
+void TcpClientManager::addConnect( asio::io_context &ctx, const std::string &ipv4 ) {
     static uint32_t id = 0;
     auto client{std::make_shared<TcpClient>(ctx, id)};
     m_clients[id].second = std::move(client);
-    m_clients[id].second->doConnect(ipv4, port);
+    m_clients[id].second->doConnect(ipv4, m_port);
     m_clients[id].second->doDisconnect = [this]( const unsigned &id ) {
         this->removeConnect(id);
     };

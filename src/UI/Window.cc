@@ -3,7 +3,8 @@
 
 Window::Window( asio::io_context &ctx ) :
     m_current_device_ctrl(std::make_shared<DeviceController>())
-    , m_client_manager(std::make_shared<TcpClientManager>())
+    , m_client_cursor_manager(std::make_shared<TcpClientManager>(tcp_const::CR_PORT))
+    , m_client_keyboard_manager(std::make_shared<TcpClientManager>(tcp_const::KB_PORT))
     , m_ctx(&ctx)
 {
     m_timer_dvf = std::make_shared<TimeoutDevicesWorker>(ctx);
@@ -27,7 +28,7 @@ Window::Window( asio::io_context &ctx ) :
         proto_project::Packet packet{};
         packet.data_type = static_cast<uint8_t>(proto_project::DataType::KeyCombo);
         packet.data = KeyCombo::doSerialize(c);
-        m_client_manager->doSend(packet);
+        m_client_keyboard_manager->doSend(packet);
     };
 
     m_tcp_server->rcvKeyCombo = [this]( const KeyCombo& c ) {
@@ -205,7 +206,7 @@ void Window::drawDeviceTable() {
                 if (ImGui::Button("Курсор", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 
                 }
-                if (m_client_manager->isClientConnected(m_found_dvf[i].addr)) {
+                if (m_client_keyboard_manager->isClientConnected(m_found_dvf[i].addr)) {
                     ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.15f, 0.65f, 0.30f, 1.0f));
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.75f, 0.35f, 1.0f));
                     ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.10f, 0.55f, 0.25f, 1.0f));
@@ -215,9 +216,9 @@ void Window::drawDeviceTable() {
                     ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.65f, 0.15f, 0.15f, 1.0f));
                 }
                 if (ImGui::Button("Клавиатура", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                    (m_client_manager->isClientConnected(m_found_dvf[i].addr)) ?
-                        m_client_manager->removeConnect(m_found_dvf[i].addr) :
-                        m_client_manager->addConnect(*m_ctx, m_found_dvf[i].addr, tcp_const::KB_PORT);
+                    (m_client_keyboard_manager->isClientConnected(m_found_dvf[i].addr)) ?
+                        m_client_keyboard_manager->removeConnect(m_found_dvf[i].addr) :
+                        m_client_keyboard_manager->addConnect(*m_ctx, m_found_dvf[i].addr);
                 }
                 ImGui::PopStyleColor(3);
                 // ImGui::SameLine();

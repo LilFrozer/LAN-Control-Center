@@ -4,7 +4,8 @@
 #include <vector>
 
 namespace tcp_const {
-    constexpr uint16_t KB_PORT = 8000;    // -> порт для управления клавиатурой //
+    constexpr uint16_t KB_PORT = 8000;      // -> порт для управления клавиатурой //
+    constexpr uint16_t CR_PORT = 8001;      // -> порт для управления курсором //
 }
 
 namespace proto_project {
