@@ -20,8 +20,8 @@ public:
     static CGEventRef systemScanning( CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *ref );
     static std::string keyCodeToString( const CGKeyCode &code );
     static std::string flagsToString( const CGEventFlags &flags );
-    std::function<void( const KeyCombo &combo )> signalKeyPressed;
-    void slotKeyPressed(const KeyCombo &c) override;
+    std::function<void( const KeyCombo &combo )> sendKeyCombo;
+    void rcvKeyCombo(const KeyCombo &c) override;
 };
 
 #endif

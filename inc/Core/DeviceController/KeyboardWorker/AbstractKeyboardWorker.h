@@ -6,23 +6,26 @@
 #include <atomic>
 
 struct KeyCombo {
-    std::vector<std::string> keys{};
+    std::string key{};
     std::string modifier{};
+
     static std::vector<char> doSerialize(const KeyCombo& combo) {
         std::vector<char> out;
         auto put32 = [&](uint32_t v) {
-            out.push_back(v & 0xFF); out.push_back((v >> 8) & 0xFF);
-            out.push_back((v >> 16) & 0xFF); out.push_back((v >> 24) & 0xFF);
+            out.push_back(v & 0xFF);
+            out.push_back((v >> 8) & 0xFF);
+            out.push_back((v >> 16) & 0xFF);
+            out.push_back((v >> 24) & 0xFF);
         };
         auto putStr = [&](const std::string& s) {
             put32((uint32_t)s.size());
             out.insert(out.end(), s.begin(), s.end());
         };
-        put32((uint32_t)combo.keys.size());
-        for (auto& k : combo.keys) putStr(k);
+        putStr(combo.key);
         putStr(combo.modifier);
         return out;
     }
+
     static KeyCombo doDeserialize(const std::vector<char>& in) {
         KeyCombo combo;
         auto it = in.cbegin();
@@ -43,14 +46,7 @@ struct KeyCombo {
             return true;
         };
 
-        uint32_t n;
-        if (!get32(n)) return combo;
-        combo.keys.reserve(n);
-        for (uint32_t i = 0; i < n; ++i) {
-            std::string k;
-            if (!getStr(k)) return combo;
-            combo.keys.push_back(std::move(k));
-        }
+        getStr(combo.key);
         getStr(combo.modifier);
         return combo;
     }
@@ -68,5 +64,5 @@ public:
     }
     virtual void startScan() = 0;
     virtual void stopScan() = 0;
-    virtual void slotKeyPressed( const KeyCombo &c ) = 0;
+    virtual void rcvKeyCombo( const KeyCombo &c ) = 0;
 };

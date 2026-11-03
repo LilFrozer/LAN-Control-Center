@@ -23,7 +23,7 @@ Window::Window( asio::io_context &ctx ) :
         break;
     }
 
-    m_current_device_ctrl->signalKeyPressed = [this]( const KeyCombo& c ) {
+    m_current_device_ctrl->sendKeyCombo = [this]( const KeyCombo& c ) {
         proto_project::Packet packet{};
         packet.data_type = static_cast<uint8_t>(proto_project::DataType::KeyCombo);
         packet.data = KeyCombo::doSerialize(c);
@@ -31,7 +31,7 @@ Window::Window( asio::io_context &ctx ) :
     };
 
     m_tcp_server->rcvKeyCombo = [this]( const KeyCombo& c ) {
-        m_current_device_ctrl->slotKeyPressed(c);
+        m_current_device_ctrl->rcvKeyCombo(c);
     };
 }
 

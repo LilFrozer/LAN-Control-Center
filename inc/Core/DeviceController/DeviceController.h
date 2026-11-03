@@ -12,6 +12,6 @@ public:
     explicit DeviceController();
     ~DeviceController();
     void setActiveBlockKeyboard( const bool &f ) const;
-    std::function<void( const KeyCombo &combo )> signalKeyPressed;
-    void slotKeyPressed( const KeyCombo &combo );
+    std::function<void( const KeyCombo &combo )> sendKeyCombo;
+    void rcvKeyCombo( const KeyCombo &combo );
 };

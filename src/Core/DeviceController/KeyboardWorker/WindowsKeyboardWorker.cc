@@ -7,7 +7,7 @@
 // Статический указатель на экземпляр для доступа из статического callback
 static WindowsKeyboardWorker* g_instance = nullptr;
 
-LRESULT CALLBACK WindowsKeyboardWorker::systemScanning(int nCode, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK WindowsKeyboardWorker::systemScanning( int nCode, WPARAM wParam, LPARAM lParam ) {
     if (nCode == HC_ACTION && g_instance && g_instance->m_flag_run.load()) {
         // wParam: WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, WM_SYSKEYUP
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
@@ -96,7 +96,7 @@ void WindowsKeyboardWorker::stopScan() {
 }
 
 // Вспомогательная функция: преобразование строки в виртуальный код клавиши Windows
-WORD WindowsKeyboardWorker::stringToVk(const std::string& s) {
+WORD WindowsKeyboardWorker::stringToVk( const std::string& s ) {
     if (s.empty()) return 0;
     
     // Одиночные символы (буквы и цифры)
@@ -135,7 +135,7 @@ WORD WindowsKeyboardWorker::stringToVk(const std::string& s) {
     return 0; // Неизвестная клавиша
 }
 
-void WindowsKeyboardWorker::slotKeyPressed(const KeyCombo &c) {
+void WindowsKeyboardWorker::rcvKeyCombo( const KeyCombo &c ) {
     std::vector<INPUT> inputs;
     
     // 1. Нажать модификаторы (например, Shift, Ctrl)

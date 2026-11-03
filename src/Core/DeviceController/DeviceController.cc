@@ -3,8 +3,8 @@
 DeviceController::DeviceController() {
 #if defined(__APPLE__)
     m_kb_worker = std::make_unique<MacosKeyboardWorker>();
-    dynamic_cast<MacosKeyboardWorker*>(m_kb_worker.get())->signalKeyPressed = [this](const KeyCombo& c) {
-        signalKeyPressed(c);
+    static_cast<MacosKeyboardWorker*>(m_kb_worker.get())->sendKeyCombo = [this](const KeyCombo& c) {
+        sendKeyCombo(c);
     };
 #elif defined(WIN32)
     m_kb_worker = std::make_unique<WindowsKeyboardWorker>();
@@ -23,6 +23,6 @@ void DeviceController::setActiveBlockKeyboard( const bool &f ) const {
     m_kb_worker->setBlockInput(f);
 }
 
-void DeviceController::slotKeyPressed( const KeyCombo &combo ) {
-    m_kb_worker->slotKeyPressed(combo);
+void DeviceController::rcvKeyCombo( const KeyCombo &combo ) {
+    m_kb_worker->rcvKeyCombo(combo);
 }

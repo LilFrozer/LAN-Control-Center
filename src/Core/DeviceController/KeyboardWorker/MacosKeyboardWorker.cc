@@ -68,9 +68,9 @@ CGEventRef MacosKeyboardWorker::systemScanning( CGEventTapProxy proxy, CGEventTy
         const CGEventFlags flags{ CGEventGetFlags(event) };
 
         KeyCombo combo{};
-        combo.keys.push_back(keyCodeToString(key_code));
+        combo.key = keyCodeToString(key_code);
         combo.modifier = flagsToString(flags);
-        p_this->signalKeyPressed(combo);
+        p_this->sendKeyCombo(combo);
     }
 
     if (p_this->m_block_input.load()) {
@@ -135,7 +135,7 @@ std::string MacosKeyboardWorker::flagsToString( const CGEventFlags &flags ) {
     return out;
 }
 
-void MacosKeyboardWorker::slotKeyPressed(const KeyCombo &c) {
+void MacosKeyboardWorker::rcvKeyCombo(const KeyCombo &c) {
 
 }
 
