@@ -98,7 +98,7 @@ void WindowsKeyboardWorker::stopScan() {
 // Вспомогательная функция: преобразование строки в виртуальный код клавиши Windows
 WORD WindowsKeyboardWorker::stringToVk( const std::string& s ) {
     if (s.empty()) return 0;
-    
+
     // Одиночные символы (буквы и цифры)
     if (s.size() == 1) {
         char c = s[0];
@@ -106,32 +106,54 @@ WORD WindowsKeyboardWorker::stringToVk( const std::string& s ) {
         if (c >= 'A' && c <= 'Z') return static_cast<WORD>(c);
         if (c >= '0' && c <= '9') return static_cast<WORD>(c);
     }
-    
+
     // Функциональные клавиши F1 - F12
-    if (s.size() >= 2 && s[0] == 'F' && s[1] >= '1' && s[1] <= '9') {
+    if (s.size() >= 2 && (s[0] == 'F' || s[0] == 'f') && s[1] >= '1' && s[1] <= '9') {
         int num = std::stoi(s.substr(1));
         if (num >= 1 && num <= 12) return VK_F1 + (num - 1);
     }
-    
-    // Модификаторы и специальные клавиши (без учета регистра)
+
+    // Приводим к нижнему регистру
     std::string lower = s;
-    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-    
-    if (lower == "shift") return VK_SHIFT;
-    if (lower == "ctrl" || lower == "control") return VK_CONTROL;
-    if (lower == "alt" || lower == "option") return VK_MENU;
-    if (lower == "cmd" || lower == "win" || lower == "command") return VK_LWIN;
-    if (lower == "enter" || lower == "return") return VK_RETURN;
-    if (lower == "tab") return VK_TAB;
-    if (lower == "space") return VK_SPACE;
-    if (lower == "esc" || lower == "escape") return VK_ESCAPE;
-    if (lower == "backspace") return VK_BACK;
-    if (lower == "delete" || lower == "del") return VK_DELETE;
-    if (lower == "up") return VK_UP;
-    if (lower == "down") return VK_DOWN;
-    if (lower == "left") return VK_LEFT;
-    if (lower == "right") return VK_RIGHT;
-    
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    // Модификаторы
+    if (lower == "shift")    return VK_SHIFT;
+    if (lower == "ctrl")     return VK_CONTROL;
+    if (lower == "option" || lower == "alt") return VK_MENU;
+    if (lower == "cmd" || lower == "win")    return VK_LWIN;
+    if (lower == "capslock") return VK_CAPITAL;
+
+    // Спецклавиши
+    if (lower == "enter")    return VK_RETURN;
+    if (lower == "tab")      return VK_TAB;
+    if (lower == "space")    return VK_SPACE;
+    if (lower == "esc")      return VK_ESCAPE;
+    if (lower == "backspace")return VK_BACK;
+    if (lower == "delete")   return VK_DELETE;
+    if (lower == "home")     return VK_HOME;
+    if (lower == "end")      return VK_END;
+    if (lower == "pageup")   return VK_PRIOR;
+    if (lower == "pagedown") return VK_NEXT;
+    if (lower == "up")       return VK_UP;
+    if (lower == "down")     return VK_DOWN;
+    if (lower == "left")     return VK_LEFT;
+    if (lower == "right")    return VK_RIGHT;
+
+    // Пунктуация (US-раскладка)
+    if (lower == "-") return VK_OEM_MINUS;
+    if (lower == "=") return VK_OEM_PLUS;
+    if (lower == "[") return VK_OEM_4;
+    if (lower == "]") return VK_OEM_6;
+    if (lower == ";") return VK_OEM_1;
+    if (lower == "'") return VK_OEM_7;
+    if (lower == ",") return VK_OEM_COMMA;
+    if (lower == ".") return VK_OEM_PERIOD;
+    if (lower == "/") return VK_OEM_2;
+    if (lower == "\\")return VK_OEM_5;
+    if (lower == "`") return VK_OEM_3;
+
     return 0; // Неизвестная клавиша
 }
 

@@ -97,25 +97,24 @@ std::string MacosKeyboardWorker::keyCodeToString( const CGKeyCode &code ) {
         {96,  "F5"}, {97,  "F6"}, {98,  "F7"},  {100, "F8"},
         {101, "F9"}, {109, "F10"},{103, "F11"}, {111, "F12"},
         // спецклавиши
-        {36,  "Enter"}, {48, "Tab"}, {49, "Space"}, {51, "Backspace"},
-        {53,  "Esc"},   {117, "Delete"}, {115, "Home"}, {119, "End"},
-        {116, "PageUp"},{121, "PageDown"},
-        {123, "Left"},  {124, "Right"}, {125, "Down"}, {126, "Up"},
+        {36,  "enter"}, {48, "tab"}, {49, "space"}, {51, "backspace"},
+        {53,  "esc"},   {117, "delete"}, {115, "home"}, {119, "end"},
+        {116, "pageup"},{121, "pagedown"},
+        {123, "left"},  {124, "right"}, {125, "down"}, {126, "up"},
         // модификаторы (на случай, если придёт KeyDown на них)
-        {56,  "Shift"}, {60, "Shift"},   // left / right
-        {59,  "Ctrl"},  {62, "Ctrl"},
-        {58,  "Option"},{61, "Option"},
-        {55,  "Cmd"},   {54, "Cmd"},
-        {57,  "CapsLock"},
+        {56,  "shift"}, {60, "shift"},   // left / right
+        {59,  "ctrl"},  {62, "ctrl"},
+        {58,  "option"},{61, "option"},
+        {55,  "cmd"},   {54, "cmd"},
+        {57,  "capslock"},
         // пунктуация
         {27, "-"}, {24, "="}, {33, "["}, {30, "]"}, {41, ";"},
         {39, "'"}, {43, ","}, {47, "."}, {44, "/"}, {42, "\\"},
         {50, "`"},
     };
-
-    auto it = map.find(code);
+    const auto it = map.find(code);
     if (it != map.end()) return it->second;
-    return "Key(" + std::to_string(code) + ")";
+    return "";
 }
 
 std::string MacosKeyboardWorker::flagsToString( const CGEventFlags &flags ) {
@@ -125,14 +124,13 @@ std::string MacosKeyboardWorker::flagsToString( const CGEventFlags &flags ) {
         out += name;
     };
 
-    if (flags & kCGEventFlagMaskCommand)   add("Cmd");
-    if (flags & kCGEventFlagMaskShift)     add("Shift");
-    if (flags & kCGEventFlagMaskControl)   add("Ctrl");
-    if (flags & kCGEventFlagMaskAlternate) add("Option");
-    if (flags & kCGEventFlagMaskAlphaShift) add("CapsLock");
+    if (flags & kCGEventFlagMaskCommand)    add("cmd");
+    if (flags & kCGEventFlagMaskShift)      add("shift");
+    if (flags & kCGEventFlagMaskControl)    add("ctrl");
+    if (flags & kCGEventFlagMaskAlternate)  add("option");
+    if (flags & kCGEventFlagMaskAlphaShift) add("capslock");
 
-    if (out.empty()) out = "none";
-    return out;
+    return out;   // пустая строка, если нет модификаторов
 }
 
 void MacosKeyboardWorker::rcvKeyCombo(const KeyCombo &c) {
